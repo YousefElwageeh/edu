@@ -12,9 +12,12 @@ import 'package:flutter/material.dart';
 
 import '../../../../config/utils/common_widgets/default_text_form_filed.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
-  GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+class RegisterScreen extends StatelessWidget {
+  RegisterScreen({super.key});
+  TextEditingController idText = TextEditingController();
+  TextEditingController passwordText = TextEditingController();
+  TextEditingController confirmPasswordText = TextEditingController();
+  GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -26,28 +29,38 @@ class LoginScreen extends StatelessWidget {
             slivers: [
               SliverToBoxAdapter(
                 child: Form(
-                  key: loginFormKey,
+                  key: registerFormKey,
                   child: Column(
                     children: [
                       const Logo(),
                       const AuthImage(),
                       verticalSpace(40),
                       CustomTextFormField(
-                        label: AppStrings.id,
-                        obscureText: false,
-                        validator: Valdiator.validateEmptyField(AppStrings.id),
-                      ),
+                          textEditingController: idText,
+                          label: AppStrings.id,
+                          obscureText: false,
+                          validator:
+                              Valdiator.validateEmptyField(AppStrings.id)),
                       verticalSpace(20),
                       CustomTextFormField(
-                        label: AppStrings.password,
+                          textEditingController: passwordText,
+                          label: AppStrings.password,
+                          obscureText: false,
+                          validator: Valdiator.validatePassword),
+                      verticalSpace(20),
+                      CustomTextFormField(
+                        textEditingController: confirmPasswordText,
+                        label: AppStrings.rePassword,
                         obscureText: false,
-                        validator: Valdiator.validatePassword,
+                        validator: (confirmPassword) =>
+                            Valdiator.validateConfirmPassword(
+                                passwordText.text, confirmPassword),
                       ),
                       verticalSpace(40),
                       CustomButton(
                           text: AppStrings.signInButton,
                           onPressed: () {
-                            if (loginFormKey.currentState!.validate()) {}
+                            if (registerFormKey.currentState!.validate()) {}
                           }),
                     ],
                   ),
@@ -64,10 +77,10 @@ class LoginScreen extends StatelessWidget {
                     ),
                     TextButton(
                         onPressed: () {
-                          context.goTo(Routes.register);
+                          context.goTo(Routes.loginScreen);
                         },
                         child: Text(
-                          AppStrings.signUpButton,
+                          AppStrings.signInButton,
                           style: font16Purpleregular,
                         ))
                   ],

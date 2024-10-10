@@ -1,7 +1,8 @@
+import 'package:edu/src/config/theme/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class DefultTextFormField extends StatelessWidget {
+class CustomTextFormField extends StatelessWidget {
   String label;
   Widget? prefixIcon;
   Widget? suffixIcon;
@@ -18,7 +19,7 @@ class DefultTextFormField extends StatelessWidget {
   void Function(String)? onFieldSubmitted;
   FocusNode? focusNode;
   bool? enabled;
-  DefultTextFormField({
+  CustomTextFormField({
     super.key,
     required this.label,
     this.prefixIcon,
@@ -55,7 +56,10 @@ class DefultTextFormField extends StatelessWidget {
       focusNode: focusNode,
       onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
-        label: Text(label),
+        label: Text(
+          label,
+          style: font24GreyBold,
+        ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
         hintText: label,

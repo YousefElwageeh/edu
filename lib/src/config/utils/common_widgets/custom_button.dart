@@ -1,13 +1,14 @@
+import 'package:edu/src/config/theme/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:edu/src/config/theme/colorManger.dart';
 
-class DefultButton extends StatelessWidget {
+class CustomButton extends StatelessWidget {
   void Function()? onPressed;
   String text;
   Color? color;
   Color? textColor;
   Color? borderColor;
-  DefultButton({
+  CustomButton({
     super.key,
     this.onPressed,
     required this.text,
@@ -28,17 +29,14 @@ class DefultButton extends StatelessWidget {
               height: 56,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                  color: color ?? ColorsManager.primaryColorLight,
+                  color: color ?? ColorsManager.primaryColor,
                   borderRadius: BorderRadius.circular(8),
                   border: borderColor != null
                       ? Border.all(color: borderColor!)
                       : null),
               child: Text(
                 text,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: textColor,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600),
+                style: font16WhiteBold,
               ),
             ),
           ),

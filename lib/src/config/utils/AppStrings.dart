@@ -29,4 +29,37 @@ class AppStrings {
   static const String No = 'No';
   static const String Yes = 'Yes';
   static const String exitApp = 'Are you sure you want to exit the app?';
+
+  static const String createAccount = 'Create Account';
+  static const String alreadyHaveAccount = 'Already have an account?';
+  static const String signInLink = 'Sign in';
+  static const String signUpButton = 'Sign Up';
+  static const String id = 'ID';
+  static const String password = 'PASSWORD';
+  static const String rePassword = 'RE-PASSWORD';
+  static const String startYourJourney = 'START YOUR JOURNEY.';
+  static const String dontHaveAccount = 'Don\'t have an account?';
+  static const String signInButton = 'Sign In';
+
+  static const String home = 'Home';
+  static const String courses = 'Courses';
+  static const String calendar = 'Calendar';
+  static const String chats = 'Chats';
+  static const String goodMorning = 'Good morning Ramona, Safasfio';
+  static const String haveANiceDay = 'Have a nice day!';
+  static const String weeklyDeadline = 'Weekly Deadline';
+  static const String assignment = 'Assignment';
+  static const String dueDate = 'Due Date';
+  static const String programmingQuiz = 'Programming Quiz';
+  static const String midTermExams = 'Mid Term Exams';
+  static const String finalExams = 'Final Exams';
+  static const String todaySchedule = 'Today Schedule';
+  static const String alexUniversity = 'Alex. University';
+  static const String name = 'Name';
+  static const String gpa = 'GPA';
+  static const String department = 'DEF';
+  static const String classInfo = 'Class';
+  static const String programmingLecture = 'Programming Lecture';
+  static const String denSection = 'DEN Section';
+  static const String sadLecture = 'SAD Lecture';
 }
