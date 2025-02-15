@@ -7,6 +7,7 @@ import 'package:edu/src/core/helpers/validators.dart';
 import 'package:edu/src/core/routes/app_router.dart';
 import 'package:edu/src/core/routes/extensions.dart';
 import 'package:edu/src/features/authntcation/presentation/widgets/auth_image.dart';
+import 'package:edu/src/features/authntcation/presentation/widgets/deafult_rich_text.dart';
 import 'package:edu/src/features/authntcation/presentation/widgets/logo.dart';
 import 'package:flutter/material.dart';
 
@@ -67,25 +68,11 @@ class RegisterScreen extends StatelessWidget {
                 ),
               ),
               SliverFillRemaining(
-                hasScrollBody: false,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      AppStrings.alreadyHaveAccount,
-                      style: font16BlackRegular,
-                    ),
-                    TextButton(
-                        onPressed: () {
-                          context.goTo(Routes.loginScreen);
-                        },
-                        child: Text(
-                          AppStrings.signInButton,
-                          style: font16Purpleregular,
-                        ))
-                  ],
-                ),
-              )
+                  hasScrollBody: false,
+                  child: defaultRichText(
+                      onTap: () => context.goTo(Routes.loginRoute),
+                      text1: AppStrings.alreadyHaveAccount,
+                      text2: AppStrings.signInButton))
             ],
           ),
         ),

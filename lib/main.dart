@@ -18,7 +18,7 @@ class EDU extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           theme: AppTheme.lightTheme(),
-          initialRoute: Routes.loginScreen,
+          initialRoute: Routes.loginRoute,
           debugShowCheckedModeBanner: false,
           onGenerateRoute: AppRouter.generateRoute,
         );

@@ -1,10 +1,12 @@
 import 'package:edu/src/features/authntcation/presentation/pages/login.dart';
 import 'package:edu/src/features/authntcation/presentation/pages/register.dart';
+import 'package:edu/src/features/home/presentation/pages/layout.dart';
 import 'package:flutter/material.dart';
 
 class Routes {
-  static const String loginScreen = '/loginScreen';
-  static const String register = '/registerScreen';
+  static const String loginRoute = '/login';
+  static const String registerRoute = '/register';
+  static const String layoutRoute = '/layout';
 }
 
 class AppRouter {
@@ -13,13 +15,17 @@ class AppRouter {
     final arguments = settings.arguments;
 
     switch (settings.name) {
-      case Routes.loginScreen:
+      case Routes.loginRoute:
         return MaterialPageRoute(
           builder: (_) => LoginScreen(),
         );
-      case Routes.register:
+      case Routes.registerRoute:
         return MaterialPageRoute(
           builder: (_) => RegisterScreen(),
+        );
+      case Routes.layoutRoute:
+        return MaterialPageRoute(
+          builder: (_) => const LayoutScreen(),
         );
       default:
         return MaterialPageRoute(
