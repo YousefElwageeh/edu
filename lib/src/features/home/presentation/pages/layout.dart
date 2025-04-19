@@ -1,5 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:edu/src/config/theme/colorManger.dart';
+import 'package:edu/src/features/calender/presentation/pages/calender_screen.dart';
+import 'package:edu/src/features/chat/presentation/pages/chat.dart';
+import 'package:edu/src/features/courses/presentation/pages/course_screen.dart';
 import 'package:edu/src/features/home/presentation/pages/home.dart';
 import 'package:edu/src/features/profile/presentation/pages/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +15,7 @@ class LayoutScreen extends StatefulWidget {
 }
 
 class _LayoutScreenState extends State<LayoutScreen> {
-  
-int selectedIndex = 0;
+  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ int selectedIndex = 0;
             size: 30,
             color: Colors.white,
           ),
-            Icon(
+          Icon(
             Icons.person,
             size: 30,
             color: Colors.white,
@@ -52,19 +54,25 @@ int selectedIndex = 0;
         ],
         onTap: (index) {
           selectedIndex = index;
-            pageController.animateToPage(index,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut);
+          pageController.animateToPage(index,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut);
         },
       ),
       body: SafeArea(
         child: PageView(
           onPageChanged: (value) {
-          selectedIndex = value;
-          setState(() {});
+            selectedIndex = value;
+            setState(() {});
           },
-            controller: pageController,
-          children: const [HomeScreen(), SizedBox(), SizedBox(), SizedBox(),ProfileScreen()],
+          controller: pageController,
+          children: const [
+            HomeScreen(),
+            CourseScreen(),
+            CalendarScreen(),
+            ChatScreen(),
+            ProfileScreen()
+          ],
         ),
       ),
     );
