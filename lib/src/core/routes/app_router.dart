@@ -1,8 +1,15 @@
+import 'package:edu/di.dart';
+import 'package:edu/src/core/api/constant&endPoints.dart';
+import 'package:edu/src/features/authntcation/data/repositories/login_repo.dart';
 import 'package:edu/src/features/authntcation/presentation/pages/login.dart';
+import 'package:edu/src/features/authntcation/presentation/cubit/authntcation_cubit.dart';
 import 'package:edu/src/features/authntcation/presentation/pages/register.dart';
 import 'package:edu/src/features/courses/presentation/pages/course_details_screen.dart';
+import 'package:edu/src/features/home/data/repositories/home_repository_impl.dart';
+import 'package:edu/src/features/home/presentation/cubit/home_cubit.dart';
 import 'package:edu/src/features/home/presentation/pages/layout.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Routes {
   static const String loginRoute = '/login';
@@ -23,7 +30,15 @@ class AppRouter {
         );
       case Routes.loginRoute:
         return MaterialPageRoute(
-          builder: (_) => LoginScreen(),
+          builder: (_) {
+            preAuth();
+            return BlocProvider(
+              create: (context) => AuthntcationCubit(
+                repository: di<LoginRepository>(),
+              ),
+              child: LoginScreen(),
+            );
+          },
         );
       case Routes.registerRoute:
         return MaterialPageRoute(

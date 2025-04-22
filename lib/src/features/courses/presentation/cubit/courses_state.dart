@@ -8,3 +8,18 @@ abstract class CoursesState extends Equatable {
 }
 
 class CoursesInitial extends CoursesState {}
+
+class CoursesLoading extends CoursesState {}
+
+class CoursesLoaded extends CoursesState {
+  final List<Subjects> courses;
+  const CoursesLoaded(this.courses);
+
+  @override
+  List<Object> get props => [courses];
+}
+
+class CoursesError extends CoursesState {
+  final String message;
+  const CoursesError(this.message);
+}

@@ -1,83 +1,80 @@
+import 'dart:math';
+
+import 'package:edu/di.dart';
 import 'package:edu/src/core/routes/app_router.dart';
 import 'package:edu/src/core/routes/extensions.dart';
+import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:edu/src/config/theme/colorManger.dart';
 
-class CourseScreen extends StatelessWidget {
+class CourseScreen extends StatefulWidget {
   const CourseScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Example course data
-    final courses = [
-      {
-        'title': 'Programming',
-        'desc': 'Learn bla blaaa blaa blaaa',
-        'lecturer': 'Dr. Abeer Amer',
-        'color': const Color(0xFFE7E3FF),
-        'icon': Icons.code,
-      },
-      {
-        'title': 'Database',
-        'desc': 'Learn bla blaaa blaa blaaa',
-        'lecturer': 'Dr. Yasser Abdelghafar',
-        'color': const Color(0xFFFFF0E3),
-        'icon': Icons.storage,
-      },
-      {
-        'title': 'MOT',
-        'desc': 'Learn bla blaaa blaa blaaa',
-        'lecturer': 'Dr. Ghada Elkahayat',
-        'color': const Color(0xFFE8F7EA),
-        'icon': Icons.lightbulb_outline,
-      },
-      {
-        'title': 'System Analysis & Design',
-        'desc': 'Learn bla blaaa blaa blaaa',
-        'lecturer': 'Dr. Abeer Amer',
-        'color': const Color(0xFFE8F7EA),
-        'icon': Icons.analytics,
-      },
-      {
-        'title': 'Statistics',
-        'desc': 'Learn bla blaaa blaa blaaa',
-        'lecturer': 'Dr. Yasser Abdelghafar',
-        'color': const Color(0xFFFFF8E3),
-        'icon': Icons.bar_chart,
-      },
-    ];
+  State<CourseScreen> createState() => _CourseScreenState();
+}
 
-    return Scaffold(
+class _CourseScreenState extends State<CourseScreen> {
+  @override
+  void initState() {
+    super.initState();
+    preCourses();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => CoursesCubit(di())..getCourses(),
+      child: Scaffold(
         body: SafeArea(
-      child: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16.w,
-            mainAxisSpacing: 16.h,
-            childAspectRatio: 1.1,
+          child: BlocBuilder<CoursesCubit, CoursesState>(
+            builder: (context, state) {
+              if (state is CoursesLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is CoursesError) {
+                return Center(child: Text(state.message));
+              } else if (state is CoursesLoaded) {
+                final courses = state.courses;
+                if (courses.isEmpty) {
+                  return const Center(child: Text('No courses available'));
+                }
+                return Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16.w,
+                      mainAxisSpacing: 16.h,
+                      childAspectRatio: 1.1,
+                    ),
+                    itemCount: courses.length > 10 ? 10 : courses.length,
+                    itemBuilder: (context, index) {
+                      final courseData = courses[index];
+                      if (courseData.course == null) return const SizedBox();
+
+                      return InkWell(
+                        onTap: () {
+                          context.goTo(Routes.courseRoute);
+                        },
+                        child: CourseCard(
+                          title: courseData.course?.courseName ?? '',
+                          desc: courseData.course?.courseDescription ?? '',
+                          lecturer:
+                              courseData.instructor?.instructorName ?? 'N/A',
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+              return const SizedBox(); // Initial state
+            },
           ),
-          itemCount: courses.length,
-          itemBuilder: (context, index) {
-            final course = courses[index];
-            return InkWell(
-              onTap: () {
-                context.goTo(Routes.courseRoute);
-              },
-              child: CourseCard(
-                title: course['title'].toString(),
-                desc: course['desc'].toString(),
-                lecturer: course['lecturer'].toString(),
-                color: course['color'] as Color,
-                icon: course['icon'] as IconData,
-              ),
-            );
-          },
         ),
       ),
-    ));
+    );
   }
 }
 
@@ -88,15 +85,13 @@ class CourseCard extends StatelessWidget {
   final Color color;
   final IconData icon;
 
-  const CourseCard({
+  CourseCard({
     super.key,
     required this.title,
     required this.desc,
     required this.lecturer,
-    required this.color,
-    required this.icon,
-  });
-
+  })  : color = coursesColors[Random().nextInt(coursesColors.length)],
+        icon = coursesIcons[Random().nextInt(coursesIcons.length)];
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -110,18 +105,18 @@ class CourseCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Expanded(
-                child: Text(
-                  'Lec: $lecturer',
-                  style: TextStyle(
-                    fontSize: 10.sp,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
+              // Expanded(
+              //   child: Text(
+              //     'Lec: $lecturer',
+              //     style: TextStyle(
+              //       fontSize: 10.sp,
+              //       color: Colors.black54,
+              //       fontWeight: FontWeight.w500,
+              //     ),
+              //   ),
+              // ),
               Icon(icon, color: ColorsManager.primaryColor, size: 22.sp),
             ],
           ),
@@ -161,3 +156,18 @@ class CourseCard extends StatelessWidget {
     );
   }
 }
+
+final coursesColors = [
+  const Color(0xFFE7E3FF),
+  const Color(0xFFFFF0E3),
+  const Color(0xFFE8F7EA),
+  const Color(0xFFE8F7EA),
+  const Color(0xFFFFF8E3),
+];
+final coursesIcons = [
+  Icons.code,
+  Icons.storage,
+  Icons.lightbulb_outline,
+  Icons.analytics,
+  Icons.bar_chart,
+];

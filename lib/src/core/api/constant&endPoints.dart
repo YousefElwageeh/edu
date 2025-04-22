@@ -1,12 +1,16 @@
 class Constants {
-  static String? token;
+  static String? studentId;
   static String language = 'ar';
+  static String apiKey =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1aXdkanRtZGVlbXBjcXhldWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3NTY1MDcsImV4cCI6MjA2MDMzMjUwN30.XfSmnKA8wbsXIA1qkfYaRkzxtEdudIDNYbSJu-M5Zag';
 
-  static String baseUrl = "http://194.164.76.46:2121";
+  static String baseUrl = "https://iuiwdjtmdeempcqxeuhf.supabase.co/rest/v1";
 }
 
 class EndPoints {
-  static const String textToVoice = '/api/v1/order/voice/';
-  static const String textToText = '/api/v1/order/chat/';
+  static const String baseUrl =
+      "https://iuiwdjtmdeempcqxeuhf.supabase.co/rest/v1";
+  static const String student = '/student';
+  static const String enrollment = '/enrollment';
   static const String closeOrder = '/api/v1/order/close/';
 }

@@ -1,4 +1,8 @@
+import 'package:edu/di.dart';
+import 'package:edu/src/features/profile/data/models/courses.dart';
+import 'package:edu/src/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -33,16 +37,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
       'location': 'Lab 3'
     },
   ];
+  @override
+  void initState() {
+    preProfile();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          _buildCalendar(),
-          const SizedBox(height: 20),
-          _buildDaySchedule(),
-        ],
+      body: BlocProvider(
+        create: (context) => ProfileCubit(),
+        child: Column(
+          children: [
+            _buildCalendar(),
+            const SizedBox(height: 20),
+            _buildDaySchedule(),
+          ],
+        ),
       ),
     );
   }
@@ -74,18 +86,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
           });
+          context.read<ProfileCubit>().getTodaySchedule(date: selectedDay);
         },
         onFormatChanged: (format) {
           setState(() {
             _calendarFormat = format;
           });
         },
-        calendarStyle: const CalendarStyle(
+        calendarStyle: CalendarStyle(
           todayDecoration: BoxDecoration(
-            color: Colors.indigo,
+            color: Colors.indigo.withOpacity(0.5),
+            // border: Border.all(color: Colors.black, width: 2),
             shape: BoxShape.circle,
           ),
-          selectedDecoration: BoxDecoration(
+          selectedDecoration: const BoxDecoration(
             color: Colors.indigo,
             shape: BoxShape.circle,
           ),
@@ -115,14 +129,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _events.length,
-                itemBuilder: (context, index) {
-                  final event = _events[index];
-                  return _buildEventCard(event);
-                },
-              ),
+            BlocBuilder<ProfileCubit, ProfileState>(
+              builder: (context, state) {
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount:
+                        context.read<ProfileCubit>().todaySchedule.length,
+                    itemBuilder: (context, index) {
+                      final event =
+                          context.read<ProfileCubit>().todaySchedule[index];
+                      return _buildEventCard(event);
+                    },
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -130,43 +150,52 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  Widget _buildEventCard(Map<String, dynamic> event) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ListTile(
-        leading: _getEventIcon(event['type']),
-        title: Text(
-          event['title'],
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(event['time']),
-            if (event['location'] != null)
-              Text(
-                '📍 ${event['location']}',
+  Widget _buildEventCard(TodaySchedule event) {
+    final courseName = event.course?.courseName ?? '';
+    final sessions = event.course?.session ?? [];
+
+    return Column(
+      children: sessions.map<Widget>(
+        (e) {
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ListTile(
+              //  leading: _getEventIcon(event),
+              title: Text(
+                courseName + (e.sessionType ?? ''),
                 style: const TextStyle(
-                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            if (event['description'] != null)
-              Text(
-                event['description'],
-                style: const TextStyle(
-                  color: Colors.grey,
-                ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(e.sessionTime.toString()),
+                  // if (e.location != null)
+                  //   Text(
+                  //     '📍 ${e.location}',
+                  //     style: const TextStyle(
+                  //       color: Colors.grey,
+                  //     ),
+                  //   ),
+                  // if (event['description'] != null)
+                  //   Text(
+                  //     event['description'],
+                  //     style: const TextStyle(
+                  //       color: Colors.grey,
+                  //     ),
+                  //   ),
+                ],
               ),
-          ],
-        ),
-        trailing: _getEventTypeChip(event['type']),
-      ),
+              trailing: _getEventTypeChip(e.sessionType ?? ''),
+            ),
+          );
+        },
+      ).toList(),
     );
   }
 

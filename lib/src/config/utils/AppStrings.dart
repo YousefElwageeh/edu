@@ -45,7 +45,7 @@ class AppStrings {
   static const String courses = 'Courses';
   static const String calendar = 'Calendar';
   static const String chats = 'Chats';
-  static const String goodMorning = 'Good morning Ramona, Safasfio';
+  static const String goodMorning = 'Good morning , ';
   static const String haveANiceDay = 'Have a nice day!';
   static const String weeklyDeadline = 'Weekly Deadline';
   static const String assignment = 'Assignment';

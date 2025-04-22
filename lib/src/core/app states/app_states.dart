@@ -2,24 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:edu/src/config/theme/colorManger.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AppStates {
-  // static ErrorState(message) {
-  //   return Get.snackbar('Error', message,
-  //       snackPosition: SnackPosition.TOP,
-  //       backgroundColor: Colors.red,
-  //       colorText: Colors.white);
-  // }
-
-  // static SucessState(message) {
-  //   return message == ''
-  //       ? null
-  //       : Get.snackbar('Sucess', message,
-  //           snackPosition: SnackPosition.TOP,
-  //           backgroundColor: Colors.green,
-  //           colorText: Colors.white);
-  // }
-
   static Widget LodaingState() {
     return Padding(
       padding: const EdgeInsets.all(12),
@@ -28,6 +13,28 @@ class AppStates {
         color: ColorsManager.primaryColor,
       )),
     );
+  }
+
+  static ErrorToast(String message) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
+  }
+
+  static SucessToast(String message) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 }
 

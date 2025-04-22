@@ -1,11 +1,16 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:edu/di.dart';
 import 'package:edu/src/config/theme/colorManger.dart';
+import 'package:edu/src/core/api/constant&endPoints.dart';
 import 'package:edu/src/features/calender/presentation/pages/calender_screen.dart';
 import 'package:edu/src/features/chat/presentation/pages/chat.dart';
 import 'package:edu/src/features/courses/presentation/pages/course_screen.dart';
+import 'package:edu/src/features/home/presentation/cubit/home_cubit.dart';
 import 'package:edu/src/features/home/presentation/pages/home.dart';
+import 'package:edu/src/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:edu/src/features/profile/presentation/pages/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LayoutScreen extends StatefulWidget {
   const LayoutScreen({super.key});
@@ -66,12 +71,28 @@ class _LayoutScreenState extends State<LayoutScreen> {
             setState(() {});
           },
           controller: pageController,
-          children: const [
-            HomeScreen(),
-            CourseScreen(),
-            CalendarScreen(),
-            ChatScreen(),
-            ProfileScreen()
+          children: [
+            BlocProvider(
+              create: (context) => HomeCubit(
+                repository: di(),
+              ),
+              child: const HomeScreen(),
+            ),
+            const CourseScreen(),
+            BlocProvider(
+              create: (context) => ProfileCubit()..getTodaySchedule(),
+              child: const CalendarScreen(),
+            ),
+            const ChatScreen(),
+            BlocProvider(
+              create: (context) => HomeCubit(
+                repository: di(),
+              )..getStudentData(),
+              child: BlocProvider(
+                create: (context) => ProfileCubit(),
+                child: const ProfileScreen(),
+              ),
+            )
           ],
         ),
       ),
