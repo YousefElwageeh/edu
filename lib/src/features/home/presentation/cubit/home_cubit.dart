@@ -39,12 +39,13 @@ class HomeCubit extends Cubit<HomeState> {
 
   List<WeeklyDeadLines> deadlines = [];
   void getWeeklyDeadlines() async {
-    emit(HomeLoading());
+    emit(HomeLoadingWeeklyDeadlines(deadlines));
     final result = await repository.getWeeklyDeadlines(Constants.studentId!);
-    result.fold((failure) => emit(HomeError(failure.message)), (deadlines) {
+    result.fold((failure) => emit(HomeErrorWeeklyDeadlines(failure.message)),
+        (deadlines) {
       this.deadlines = deadlines;
-      emit(HomeLoaded(
-        student,
+      emit(HomeLoadedWeeklyDeadlines(
+        deadlines,
       ));
     });
   }

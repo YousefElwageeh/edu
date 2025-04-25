@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: font16BlackBold.copyWith(
                                     color: ColorsManager.primaryColor),
                               ),
-                              verticalSpace(15),
+                              verticalSpace(5),
                               Text(
                                 AppStrings.haveANiceDay,
                                 style: font16Greyregular.copyWith(fontSize: 12),
@@ -66,10 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                     Image.asset(
-                      AssetsManger.lazy_female,
+                      AssetsManger.auth_Image,
                       height: 100.h,
                       width: 100.w,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                     )
                   ],
                 ),

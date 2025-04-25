@@ -45,10 +45,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocProvider(
-        create: (context) => ProfileCubit(),
-        child: Column(
+    return BlocProvider(
+      create: (context) => ProfileCubit()..getTodaySchedule(),
+      child: Scaffold(
+        body: Column(
           children: [
             _buildCalendar(),
             const SizedBox(height: 20),
@@ -73,42 +73,46 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
         ],
       ),
-      child: TableCalendar(
-        firstDay: DateTime.utc(2024, 1, 1),
-        lastDay: DateTime.utc(2025, 12, 31),
-        focusedDay: _focusedDay,
-        calendarFormat: _calendarFormat,
-        selectedDayPredicate: (day) {
-          return isSameDay(_selectedDay, day);
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
+          return TableCalendar(
+            firstDay: DateTime.utc(2024, 1, 1),
+            lastDay: DateTime.utc(2025, 12, 31),
+            focusedDay: _focusedDay,
+            calendarFormat: _calendarFormat,
+            selectedDayPredicate: (day) {
+              return isSameDay(_selectedDay, day);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+              context.read<ProfileCubit>().getTodaySchedule(date: selectedDay);
+            },
+            onFormatChanged: (format) {
+              setState(() {
+                _calendarFormat = format;
+              });
+            },
+            calendarStyle: CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: Colors.indigo.withOpacity(0.5),
+                // border: Border.all(color: Colors.black, width: 2),
+                shape: BoxShape.circle,
+              ),
+              selectedDecoration: const BoxDecoration(
+                color: Colors.indigo,
+                shape: BoxShape.circle,
+              ),
+            ),
+            headerStyle: const HeaderStyle(
+              formatButtonVisible: true,
+              titleCentered: true,
+              formatButtonShowsNext: false,
+            ),
+          );
         },
-        onDaySelected: (selectedDay, focusedDay) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
-          context.read<ProfileCubit>().getTodaySchedule(date: selectedDay);
-        },
-        onFormatChanged: (format) {
-          setState(() {
-            _calendarFormat = format;
-          });
-        },
-        calendarStyle: CalendarStyle(
-          todayDecoration: BoxDecoration(
-            color: Colors.indigo.withOpacity(0.5),
-            // border: Border.all(color: Colors.black, width: 2),
-            shape: BoxShape.circle,
-          ),
-          selectedDecoration: const BoxDecoration(
-            color: Colors.indigo,
-            shape: BoxShape.circle,
-          ),
-        ),
-        headerStyle: const HeaderStyle(
-          formatButtonVisible: true,
-          titleCentered: true,
-          formatButtonShowsNext: false,
-        ),
       ),
     );
   }
@@ -131,17 +135,57 @@ class _CalendarScreenState extends State<CalendarScreen> {
             const SizedBox(height: 16),
             BlocBuilder<ProfileCubit, ProfileState>(
               builder: (context, state) {
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount:
-                        context.read<ProfileCubit>().todaySchedule.length,
-                    itemBuilder: (context, index) {
-                      final event =
-                          context.read<ProfileCubit>().todaySchedule[index];
-                      return _buildEventCard(event);
-                    },
-                  ),
-                );
+                if (state is ProfileLoading) {
+                  return const Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                if (state is ProfileError) {
+                  return Expanded(
+                    child: Center(
+                      child: Text(
+                        state.message,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (state is ProfileLoaded) {
+                  if (state.todaySchedule.isEmpty) {
+                    return const Expanded(
+                      child: Center(
+                        child: Text(
+                          'No events for today',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount:
+                          context.read<ProfileCubit>().todaySchedule.length,
+                      itemBuilder: (context, index) {
+                        final event =
+                            context.read<ProfileCubit>().todaySchedule[index];
+                        return _buildEventCard(event);
+                      },
+                    ),
+                  );
+                }
+
+                return const SizedBox.shrink();
               },
             ),
           ],
@@ -154,48 +198,84 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final courseName = event.course?.courseName ?? '';
     final sessions = event.course?.session ?? [];
 
-    return Column(
-      children: sessions.map<Widget>(
-        (e) {
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: const BoxDecoration(
+              color: Colors.indigo,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
+              ),
             ),
-            child: ListTile(
-              //  leading: _getEventIcon(event),
-              title: Text(
-                courseName + (e.sessionType ?? ''),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+            child: Text(
+              courseName,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: sessions.length,
+            itemBuilder: (context, index) {
+              final session = sessions[index];
+              return Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  //  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: index < sessions.length - 1
+                      ? const Border(
+                          bottom: BorderSide(color: Colors.grey, width: 0.5),
+                        )
+                      : null,
                 ),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(e.sessionTime.toString()),
-                  // if (e.location != null)
-                  //   Text(
-                  //     '📍 ${e.location}',
-                  //     style: const TextStyle(
-                  //       color: Colors.grey,
-                  //     ),
-                  //   ),
-                  // if (event['description'] != null)
-                  //   Text(
-                  //     event['description'],
-                  //     style: const TextStyle(
-                  //       color: Colors.grey,
-                  //     ),
-                  //   ),
-                ],
-              ),
-              trailing: _getEventTypeChip(e.sessionType ?? ''),
-            ),
-          );
-        },
-      ).toList(),
+                child: Row(
+                  children: [
+                    _getEventIcon(session.sessionType ?? ''),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            session.sessionType ?? '',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            session.sessionTime?.toString() ?? '',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _getEventTypeChip(session.sessionType ?? ''),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -243,9 +323,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
         chipColor = Colors.blue;
         label = 'Lecture';
         break;
-      case 'assignment':
+      case 'section':
         chipColor = Colors.orange;
-        label = 'Assignment';
+        label = 'Section';
         break;
       case 'quiz':
         chipColor = Colors.red;

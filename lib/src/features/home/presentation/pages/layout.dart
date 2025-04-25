@@ -3,7 +3,8 @@ import 'package:edu/di.dart';
 import 'package:edu/src/config/theme/colorManger.dart';
 import 'package:edu/src/core/api/constant&endPoints.dart';
 import 'package:edu/src/features/calender/presentation/pages/calender_screen.dart';
-import 'package:edu/src/features/chat/presentation/pages/chat.dart';
+import 'package:edu/src/features/chat/presentation/pages/chat_screen.dart';
+import 'package:edu/src/features/chat/presentation/widgets/chat_list.dart';
 import 'package:edu/src/features/courses/presentation/pages/course_screen.dart';
 import 'package:edu/src/features/home/presentation/cubit/home_cubit.dart';
 import 'package:edu/src/features/home/presentation/pages/home.dart';
@@ -79,10 +80,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
               child: const HomeScreen(),
             ),
             const CourseScreen(),
-            BlocProvider(
-              create: (context) => ProfileCubit()..getTodaySchedule(),
-              child: const CalendarScreen(),
-            ),
+            const CalendarScreen(),
             const ChatScreen(),
             BlocProvider(
               create: (context) => HomeCubit(

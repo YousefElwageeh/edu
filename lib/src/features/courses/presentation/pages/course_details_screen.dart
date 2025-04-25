@@ -1,3 +1,5 @@
+import 'package:edu/src/core/routes/app_router.dart';
+import 'package:edu/src/core/routes/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -163,10 +165,15 @@ class SectionCard extends StatelessWidget {
                         const Icon(Icons.circle, size: 8, color: Colors.grey),
                         SizedBox(width: 8.w),
                         Expanded(
-                          child: Text(
-                            item,
-                            style: TextStyle(
-                                fontSize: 13.sp, color: Colors.black87),
+                          child: InkWell(
+                            onTap: () {
+                              context.goTo(Routes.projectRoute);
+                            },
+                            child: Text(
+                              item,
+                              style: TextStyle(
+                                  fontSize: 13.sp, color: Colors.black87),
+                            ),
                           ),
                         )
                       ],

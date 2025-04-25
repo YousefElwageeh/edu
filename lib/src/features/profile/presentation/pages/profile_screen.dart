@@ -149,9 +149,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildCalendarSection() {
     return Column(
       children: [
-        const Text(
-          'OCT',
-          style: TextStyle(
+        Text(
+          MonthMap[DateTime.now().month] ?? '',
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.indigo,
@@ -161,13 +161,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildDateItem('SAT', '4'),
-            _buildDateItem('SUN', '5'),
-            _buildDateItem('MON', '6'),
-            _buildDateItem('TUE', '7', isSelected: true),
-            _buildDateItem('WED', '8'),
-            _buildDateItem('THE', '9'),
-            _buildDateItem('FRI', '10'),
+            ...List.generate(7, (index) {
+              final date = DateTime.now()
+                  .subtract(Duration(days: DateTime.now().weekday - index - 1));
+              return _buildDateItem(
+                [
+                  'SUN',
+                  'MON',
+                  'TUE',
+                  'WED',
+                  'THU',
+                  'FRI',
+                  'SAT'
+                ][date.weekday % 7],
+                '${date.day}',
+                isSelected: date.day == DateTime.now().day,
+              );
+            }),
           ],
         ),
       ],
@@ -272,7 +282,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             '${time.hour}:${time.minute.toString().padLeft(2, '0')}',
                           );
                         }),
-                        const SizedBox(height: 16),
                       ],
                     );
                   },
@@ -331,3 +340,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+
+Map MonthMap = {
+  1: 'JAN',
+  2: 'FEB',
+  3: 'MAR',
+  4: 'APR',
+  5: 'MAY',
+  6: 'JUN',
+  7: 'JUL',
+  8: 'AUG',
+  9: 'SEP',
+  10: 'OCT',
+  11: 'NOV',
+  12: 'DEC',
+};

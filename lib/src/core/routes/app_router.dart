@@ -5,6 +5,8 @@ import 'package:edu/src/features/authntcation/presentation/pages/login.dart';
 import 'package:edu/src/features/authntcation/presentation/cubit/authntcation_cubit.dart';
 import 'package:edu/src/features/authntcation/presentation/pages/register.dart';
 import 'package:edu/src/features/courses/presentation/pages/course_details_screen.dart';
+import 'package:edu/src/features/courses/presentation/pages/project_screen.dart';
+import 'package:edu/src/features/courses/presentation/pages/quiz_screen.dart';
 import 'package:edu/src/features/home/data/repositories/home_repository_impl.dart';
 import 'package:edu/src/features/home/presentation/cubit/home_cubit.dart';
 import 'package:edu/src/features/home/presentation/pages/layout.dart';
@@ -16,6 +18,8 @@ class Routes {
   static const String registerRoute = '/register';
   static const String layoutRoute = '/layout';
   static const String courseRoute = '/course';
+  static const String quizRoute = '/quiz';
+  static const String projectRoute = '/project';
 }
 
 class AppRouter {
@@ -24,6 +28,14 @@ class AppRouter {
     final arguments = settings.arguments;
 
     switch (settings.name) {
+      case Routes.projectRoute:
+        return MaterialPageRoute(
+          builder: (_) => const ProjectScreen(),
+        );
+      case Routes.quizRoute:
+        return MaterialPageRoute(
+          builder: (_) => const QuizScreen(),
+        );
       case Routes.courseRoute:
         return MaterialPageRoute(
           builder: (_) => const CourseDetailsScreen(),
