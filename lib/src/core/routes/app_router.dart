@@ -4,6 +4,8 @@ import 'package:edu/src/features/authntcation/data/repositories/login_repo.dart'
 import 'package:edu/src/features/authntcation/presentation/pages/login.dart';
 import 'package:edu/src/features/authntcation/presentation/cubit/authntcation_cubit.dart';
 import 'package:edu/src/features/authntcation/presentation/pages/register.dart';
+import 'package:edu/src/features/courses/data/repositories/course_repo.dart';
+import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:edu/src/features/courses/presentation/pages/course_details_screen.dart';
 import 'package:edu/src/features/courses/presentation/pages/project_screen.dart';
 import 'package:edu/src/features/courses/presentation/pages/quiz_screen.dart';
@@ -38,7 +40,13 @@ class AppRouter {
         );
       case Routes.courseRoute:
         return MaterialPageRoute(
-          builder: (_) => const CourseDetailsScreen(),
+          builder: (_) => BlocProvider<CoursesCubit>.value(
+            value: (arguments as CourseDetailsScreen).cubit,
+            child: CourseDetailsScreen(
+              courseName: (arguments).courseName,
+              cubit: (arguments).cubit,
+            ),
+          ),
         );
       case Routes.loginRoute:
         return MaterialPageRoute(

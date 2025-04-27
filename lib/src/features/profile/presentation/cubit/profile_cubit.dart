@@ -33,7 +33,10 @@ class ProfileCubit extends Cubit<ProfileState> {
         (failure) => emit(ProfileError(failure.message)),
         (coursesData) {
           todaySchedule = coursesData;
+
           log(todaySchedule.length.toString());
+          getCalenderEvents(date: date);
+
           emit(ProfileLoaded(coursesData));
         },
       );
@@ -46,5 +49,26 @@ class ProfileCubit extends Cubit<ProfileState> {
     Constants.studentId = null;
     await di<FlutterSecureStorage>().delete(key: PrefData.token);
     context.goToAndReplaceUntil(Routes.loginRoute, predicate: (route) => false);
+  }
+
+  Future<void> getCalenderEvents({
+    DateTime? date,
+  }) async {
+    emit(ProfileLoading());
+    try {
+      final result = await repo.getCalenderEvents(
+        date ?? DateTime.now(),
+      );
+      result.fold(
+        (failure) => emit(ProfileError(failure.message)),
+        (coursesData) {
+          todaySchedule.addAll(coursesData);
+          log(todaySchedule.length.toString());
+          emit(ProfileLoaded(coursesData));
+        },
+      );
+    } catch (e) {
+      emit(ProfileError(e.toString()));
+    }
   }
 }

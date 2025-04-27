@@ -1,8 +1,14 @@
 import 'package:edu/di.dart';
+import 'package:edu/src/config/theme/colorManger.dart';
+import 'package:edu/src/config/theme/styles.dart';
+import 'package:edu/src/config/utils/common_widgets/custom_button.dart';
+import 'package:edu/src/core/helpers/spacing.dart';
 import 'package:edu/src/features/profile/data/models/courses.dart';
 import 'package:edu/src/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -48,6 +54,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return BlocProvider(
       create: (context) => ProfileCubit()..getTodaySchedule(),
       child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: ColorsManager.primaryColor,
+          onPressed: () => _showAddEventDialog(context),
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
         body: Column(
           children: [
             _buildCalendar(),
@@ -331,6 +342,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
         chipColor = Colors.red;
         label = 'Quiz';
         break;
+      case 'assignment':
+        chipColor = Colors.redAccent;
+        label = 'Assignment';
+        break;
+
       default:
         chipColor = Colors.grey;
         label = 'Event';
@@ -364,5 +380,261 @@ class _CalendarScreenState extends State<CalendarScreen> {
       'December'
     ];
     return months[month - 1];
+  }
+
+  // Show Add Event Dialog
+  void _showAddEventDialog(BuildContext context) {
+    final TextEditingController titleController = TextEditingController();
+    final TextEditingController descriptionController = TextEditingController();
+
+    DateTime startDate = _selectedDay ?? DateTime.now();
+    DateTime endDate = _selectedDay ?? DateTime.now();
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        insetPadding: EdgeInsets.symmetric(horizontal: 16.w),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(20.r),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Text(
+                      'Create Event',
+                      style: font24BlackBold,
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(
+                        Icons.close,
+                        color: ColorsManager.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                verticalSpace(10),
+                Text(
+                  'Every moment of learning is a step towards success.',
+                  style: font16Greyregular,
+                ),
+                verticalSpace(20),
+
+                // Event Title
+                Text(
+                  'Event Title',
+                  style: font16BlackBold,
+                ),
+                verticalSpace(8),
+                _buildTextField(titleController, 'Event Title'),
+                verticalSpace(20),
+
+                // Event Date Range
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Event Start Date',
+                            style: font16BlackBold,
+                          ),
+                          verticalSpace(8),
+                          _buildDatePicker(
+                            context,
+                            startDate,
+                            (date) => startDate = date,
+                          ),
+                        ],
+                      ),
+                    ),
+                    horizontalSpace(10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Event End Date',
+                            style: font16BlackBold,
+                          ),
+                          verticalSpace(8),
+                          _buildDatePicker(
+                            context,
+                            endDate,
+                            (date) => endDate = date,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                verticalSpace(20),
+
+                // Description
+                Text(
+                  'Description',
+                  style: font16BlackBold,
+                ),
+                verticalSpace(8),
+                _buildTextField(
+                  descriptionController,
+                  'Type Something Of You Want...',
+                  maxLines: 4,
+                ),
+                verticalSpace(20),
+
+                // Event Features
+                Column(
+                  children: [
+                    _buildFeatureItem(
+                      Icons.edit,
+                      ColorsManager.primaryColor,
+                      'With every event, we write a new chapter in our learning journey.',
+                    ),
+                    verticalSpace(10),
+                    _buildFeatureItem(
+                      Icons.lightbulb_outline,
+                      Colors.amber,
+                      'Learn, engage, and achieve your dreams with us',
+                    ),
+                    verticalSpace(10),
+                    _buildFeatureItem(
+                      Icons.school,
+                      Colors.blue,
+                      'Let\'s explore the world of knowledge, step by step.',
+                    ),
+                  ],
+                ),
+                verticalSpace(20),
+
+                // Save Button
+                CustomButton(
+                  text: 'Save',
+                  onPressed: () {
+                    // Add event logic would go here
+                    // For now, we'll just close the dialog
+                    Navigator.pop(context);
+
+                    // Show a snackbar to indicate success
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Event created successfully'),
+                        backgroundColor: ColorsManager.primaryColor,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper method to build text fields
+  Widget _buildTextField(TextEditingController controller, String hint,
+      {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.grey[400]),
+        filled: true,
+        fillColor: Colors.grey[100],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      ),
+    );
+  }
+
+  // Helper method to build date pickers
+  Widget _buildDatePicker(BuildContext context, DateTime initialDate,
+      Function(DateTime) onDateSelected) {
+    return GestureDetector(
+      onTap: () async {
+        final DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: initialDate,
+          firstDate: DateTime.now(),
+          lastDate: DateTime(2025),
+          builder: (context, child) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: ColorsManager.primaryColor,
+                ),
+              ),
+              child: child!,
+            );
+          },
+        );
+        if (picked != null) {
+          onDateSelected(picked);
+        }
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Row(
+          children: [
+            Text(
+              DateFormat('MMM dd, yyyy').format(initialDate),
+              style: font16BlackRegular.copyWith(fontSize: 12.r),
+            ),
+            const Spacer(),
+            Icon(
+              Icons.calendar_today,
+              color: ColorsManager.primaryColor,
+              size: 18.r,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper method to build feature items
+  Widget _buildFeatureItem(IconData icon, Color color, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: EdgeInsets.all(8.r),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 20.r,
+          ),
+        ),
+        horizontalSpace(10),
+        Expanded(
+          child: Text(
+            text,
+            style: font16Greyregular,
+          ),
+        ),
+      ],
+    );
   }
 }

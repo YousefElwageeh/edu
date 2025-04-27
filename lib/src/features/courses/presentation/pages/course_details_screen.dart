@@ -1,10 +1,30 @@
 import 'package:edu/src/core/routes/app_router.dart';
 import 'package:edu/src/core/routes/extensions.dart';
+import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CourseDetailsScreen extends StatelessWidget {
-  const CourseDetailsScreen({super.key});
+class CourseDetailsScreen extends StatefulWidget {
+  final String courseName;
+  final CoursesCubit cubit;
+
+  const CourseDetailsScreen({
+    super.key,
+    required this.courseName,
+    required this.cubit,
+  });
+
+  @override
+  State<CourseDetailsScreen> createState() => _CourseDetailsScreenState();
+}
+
+class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
+  @override
+  void initState() {
+    context.read<CoursesCubit>().getQuizes(widget.courseName);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +35,11 @@ class CourseDetailsScreen extends StatelessWidget {
         'icon': Icons.menu_book_outlined,
         'color': const Color(0xFFB9B5FF),
         'border': const Color(0xFF7C7CFF),
+        'items': context
+            .read<CoursesCubit>()
+            .quizes
+            .map((e) => "quiz ${e.courseId} ${e.course?.courseName ?? 'N/A'} ")
+            .toList(),
       },
       {
         'title': 'Section',
@@ -22,6 +47,12 @@ class CourseDetailsScreen extends StatelessWidget {
         'icon': Icons.receipt_long_outlined,
         'color': const Color(0xFFFFE5D1),
         'border': const Color(0xFFFFB385),
+        'items': context
+            .read<CoursesCubit>()
+            .quizes
+            .map((e) =>
+                "assignment ${e.courseId} ${e.course?.courseName ?? 'N/A'} ")
+            .toList(),
       },
       {
         'title': 'Assignment',
@@ -29,6 +60,12 @@ class CourseDetailsScreen extends StatelessWidget {
         'icon': Icons.event_note_outlined,
         'color': const Color(0xFFD7FFE6),
         'border': const Color(0xFF43E58B),
+        'items': context
+            .read<CoursesCubit>()
+            .quizes
+            .map((e) =>
+                "assignment ${e.courseId} ${e.course?.courseName ?? 'N/A'} ")
+            .toList(),
       },
       {
         'title': 'Quiz',
@@ -36,6 +73,11 @@ class CourseDetailsScreen extends StatelessWidget {
         'icon': Icons.quiz_outlined,
         'color': const Color(0xFFFFF3D1),
         'border': const Color(0xFFFFD85C),
+        'items': context
+            .read<CoursesCubit>()
+            .quizes
+            .map((e) => "quiz ${e.courseId} ${e.course?.courseName ?? 'N/A'} ")
+            .toList(),
       },
       {
         'title': 'Project',
@@ -43,6 +85,12 @@ class CourseDetailsScreen extends StatelessWidget {
         'icon': Icons.insert_chart_outlined,
         'color': const Color(0xFFD7FFE6),
         'border': const Color(0xFF43E58B),
+        'items': context
+            .read<CoursesCubit>()
+            .quizes
+            .map((e) =>
+                "project ${e.courseId} ${e.course?.courseName ?? 'N/A'} ")
+            .toList(),
       },
       {
         'title': 'Chat',
@@ -50,6 +98,11 @@ class CourseDetailsScreen extends StatelessWidget {
         'icon': Icons.chat_outlined,
         'color': const Color(0xFFB9B5FF),
         'border': const Color(0xFF7C7CFF),
+        'items': context
+            .read<CoursesCubit>()
+            .quizes
+            .map((e) => "chat ${e.courseId} ${e.course?.courseName ?? 'N/A'} ")
+            .toList(),
       },
     ];
     return Scaffold(
@@ -74,11 +127,7 @@ class CourseDetailsScreen extends StatelessWidget {
               icon: section['icon'] as IconData,
               color: section['color'] as Color,
               borderColor: section['border'] as Color,
-              items: [
-                'Item 1 for ${section['title']}',
-                'Item 2 for ${section['title']}',
-                'Item 3 for ${section['title']}',
-              ],
+              items: section['items'] as List<String>,
             );
           },
         ),

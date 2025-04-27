@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:edu/src/core/api/constant&endPoints.dart';
 import 'package:edu/src/core/api/dio_factory.dart';
 import 'package:edu/src/features/profile/data/models/courses.dart';
@@ -23,5 +25,33 @@ class ProfileDataSource {
     return (response.data as List)
         .map((e) => TodaySchedule.fromJson(e))
         .toList();
+  }
+
+  Future<List<TodaySchedule>> getCalenderEvents(DateTime date) async {
+    DateTime dateAfterDay = date.add(const Duration(days: 1));
+
+    final response = await DioFactory.getdata(
+      url: EndPoints.calendar,
+      quary: {
+        "select": "*'",
+        "event_startdatetime": [
+          "gte.${date.year}-${date.month}-${date.day}",
+          "lt.${dateAfterDay.year}-${dateAfterDay.month}-${dateAfterDay.day}"
+        ]
+      },
+    );
+
+    return (response.data as List).map((e) {
+      log(e.toString());
+      return TodaySchedule(
+          courseId: e['event_id'],
+          course: CourseTodaySchedule(courseName: e['event_name'], session: [
+            Session(
+              sessionType: e['event_type'],
+              sessionTime: DateTime.parse(e["event_startdatetime"]),
+              courseId: e['event_id'],
+            )
+          ]));
+    }).toList();
   }
 }

@@ -23,3 +23,13 @@ class CoursesError extends CoursesState {
   final String message;
   const CoursesError(this.message);
 }
+
+class GetQuizes extends CoursesState {
+  const GetQuizes();
+  @override
+  List<Object> get props => [];
+}
+
+class GetQuizesLoaded extends CoursesState {}
+
+class GetQuizesError extends CoursesState {}

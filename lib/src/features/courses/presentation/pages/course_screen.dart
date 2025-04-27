@@ -4,6 +4,7 @@ import 'package:edu/di.dart';
 import 'package:edu/src/core/routes/app_router.dart';
 import 'package:edu/src/core/routes/extensions.dart';
 import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
+import 'package:edu/src/features/courses/presentation/pages/course_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -56,7 +57,11 @@ class _CourseScreenState extends State<CourseScreen> {
 
                       return InkWell(
                         onTap: () {
-                          context.goTo(Routes.courseRoute);
+                          context.goTo(Routes.courseRoute,
+                              arguments: CourseDetailsScreen(
+                                courseName: courseData.course?.courseName ?? '',
+                                cubit: context.read<CoursesCubit>(),
+                              ));
                         },
                         child: CourseCard(
                           title: courseData.course?.courseName ?? '',

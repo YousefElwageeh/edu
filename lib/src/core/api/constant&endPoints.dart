@@ -12,5 +12,8 @@ class EndPoints {
       "https://iuiwdjtmdeempcqxeuhf.supabase.co/rest/v1";
   static const String student = '/student';
   static const String enrollment = '/enrollment';
+  static const String quiz = '/quiz';
+  static const String calendar = '/calendar_event';
+
   static const String closeOrder = '/api/v1/order/close/';
 }

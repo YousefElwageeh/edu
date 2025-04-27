@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'chat_list_item.dart';
 
 class ChatList extends StatelessWidget {
-  const ChatList({Key? key}) : super(key: key);
+  const ChatList({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const SizedBox(),
         title: const Text('Messages'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
@@ -52,12 +53,6 @@ class ChatList extends StatelessWidget {
             message: 'bla blaa blaa..',
             time: '4:20 pm',
             unreadCount: 6,
-          ),
-          ChatListItem(
-            name: 'Yara',
-            message: 'bla blaa blaa..',
-            time: '3:10 pm',
-            unreadCount: 4,
           ),
         ],
       ),

@@ -17,4 +17,14 @@ class ProfileRepo {
       return Left(ErrorHandler.handle(e).failure);
     }
   }
+
+  Future<Either<Failure, List<TodaySchedule>>> getCalenderEvents(
+      DateTime date) async {
+    try {
+      final response = await dataSource.getCalenderEvents(date);
+      return Right(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
 }
