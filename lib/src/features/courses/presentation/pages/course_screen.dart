@@ -36,8 +36,8 @@ class _CourseScreenState extends State<CourseScreen> {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is CoursesError) {
                 return Center(child: Text(state.message));
-              } else if (state is CoursesLoaded) {
-                final courses = state.courses;
+              } else {
+                final courses = context.read<CoursesCubit>().courses;
                 if (courses.isEmpty) {
                   return const Center(child: Text('No courses available'));
                 }

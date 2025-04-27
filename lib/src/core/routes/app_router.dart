@@ -4,6 +4,7 @@ import 'package:edu/src/features/authntcation/data/repositories/login_repo.dart'
 import 'package:edu/src/features/authntcation/presentation/pages/login.dart';
 import 'package:edu/src/features/authntcation/presentation/cubit/authntcation_cubit.dart';
 import 'package:edu/src/features/authntcation/presentation/pages/register.dart';
+import 'package:edu/src/features/courses/data/models/quizes.dart';
 import 'package:edu/src/features/courses/data/repositories/course_repo.dart';
 import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:edu/src/features/courses/presentation/pages/course_details_screen.dart';
@@ -36,7 +37,9 @@ class AppRouter {
         );
       case Routes.quizRoute:
         return MaterialPageRoute(
-          builder: (_) => const QuizScreen(),
+          builder: (_) => QuizScreen(
+            quizes: arguments as Quizes,
+          ),
         );
       case Routes.courseRoute:
         return MaterialPageRoute(
