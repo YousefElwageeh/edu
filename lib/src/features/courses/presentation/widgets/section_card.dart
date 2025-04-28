@@ -90,13 +90,19 @@ class SectionCard extends StatelessWidget {
                             Expanded(
                               child: InkWell(
                                 onTap: () {
-                                  Quizes quiz = context
-                                      .read<CoursesCubit>()
-                                      .quizes
-                                      .firstWhere((element) => item.contains(
-                                          element.courseId.toString()));
-                                  context.goTo(Routes.quizRoute,
-                                      arguments: quiz);
+                                  if (title == 'Quiz') {
+                                    Quizes quiz = context
+                                        .read<CoursesCubit>()
+                                        .quizes
+                                        .firstWhere((element) => item.contains(
+                                            element.courseId.toString()));
+                                    context.goTo(Routes.quizRoute,
+                                        arguments: quiz);
+                                  } else if (title == 'Project') {
+                                    context.goTo(
+                                      Routes.projectRoute,
+                                    );
+                                  }
                                 },
                                 child: Text(
                                   item,

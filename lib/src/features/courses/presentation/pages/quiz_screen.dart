@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:edu/src/core/app%20states/app_states.dart';
+import 'package:edu/src/core/routes/extensions.dart';
 import 'package:edu/src/features/courses/data/models/quizes.dart';
 import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +18,26 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  int? selectedOption;
-  PageController pageController = PageController();
+  List<int> selectedOption = [];
+  List<bool> isOptionTrue = [];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedOption = List.generate(
+      widget.quizes.questions?.length ?? 0,
+      (index) => -1,
+    );
+    isOptionTrue = List.generate(
+      widget.quizes.questions?.length ?? 0,
+      (index) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    PageController pageController = PageController();
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -62,10 +82,10 @@ class _QuizScreenState extends State<QuizScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              QuizProgressBar(
-                progress: (pageController.page?.toInt() ?? 0) /
-                    (widget.quizes.questions?.length ?? 0),
-              ),
+              // QuizProgressBar(
+              //   progress: (pageController.page?.toInt() ?? 0) /
+              //       (widget.quizes.questions?.length ?? 0),
+              // ),
               const SizedBox(height: 32),
               Expanded(
                 child: PageView.builder(
@@ -104,10 +124,18 @@ class _QuizScreenState extends State<QuizScreen> {
                                   optionText: widget.quizes.questions?[index]
                                           .options?[i] ??
                                       '',
-                                  isSelected: selectedOption == i,
+                                  isSelected: selectedOption[index] == i,
                                   onTap: () {
                                     setState(() {
-                                      selectedOption = i;
+                                      if (i ==
+                                          widget.quizes.questions?[index]
+                                              .correctAnswer) {
+                                        isOptionTrue[index] = true;
+                                      } else {
+                                        isOptionTrue[index] = false;
+                                      }
+
+                                      selectedOption[index] = i;
                                     });
                                   },
                                 ),
@@ -119,53 +147,64 @@ class _QuizScreenState extends State<QuizScreen> {
                   },
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      if ((pageController.page?.toInt() ?? 0) > 0) {
-                        pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.arrow_back),
-                    label: const Text('Previous'),
-                  ),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          if ((pageController.page?.toInt() ?? 0) <
-                              (widget.quizes.questions?.length ?? 0)) {
-                            pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        },
-                        child: const Text('Next'),
-                      ),
-                      const SizedBox(width: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          if ((pageController.page?.toInt() ?? 0) <
-                              (widget.quizes.questions?.length ?? 0)) {
-                            pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        },
-                        child: const Text('Finish',
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+
+              FutureBuilder(
+                  future: Future.value(true),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const SizedBox.shrink();
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            if ((pageController.page?.toInt() ?? 0) > 0) {
+                              pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                              setState(() {});
+                            }
+                          },
+                          icon: const Icon(Icons.arrow_back),
+                          label: const Text('Previous'),
+                        ),
+                        Row(
+                          children: [
+                            if ((pageController.page?.toInt() ?? 0) ==
+                                (widget.quizes.questions?.length ?? 0) - 1)
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (!selectedOption.contains(-1)) {
+                                    AppStates.SucessToast('Quiz Completed');
+                                    context.back();
+                                  } else {
+                                    AppStates.ErrorToast(
+                                        'Please answer all questions');
+                                  }
+                                },
+                                child: const Text('Finish',
+                                    style: TextStyle(color: Colors.white)),
+                              )
+                            else
+                              TextButton(
+                                onPressed: () {
+                                  if ((pageController.page?.toInt() ?? 0) <
+                                      (widget.quizes.questions?.length ?? 0)) {
+                                    pageController.nextPage(
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  }
+                                  setState(() {});
+                                },
+                                child: const Text('Next'),
+                              ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }),
             ],
           ),
         ),

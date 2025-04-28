@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:edu/src/core/api/constant&endPoints.dart';
 import 'package:edu/src/core/api/dio_factory.dart';
 import 'package:edu/src/features/profile/data/models/courses.dart';
@@ -53,5 +54,27 @@ class ProfileDataSource {
             )
           ]));
     }).toList();
+  }
+
+  Future<Response<dynamic>> addEvent({
+    required String eventName,
+    required DateTime eventStartDateTime,
+    required DateTime eventEndDateTime,
+    required String eventType,
+    required String eventDetails,
+  }) async {
+    final response = await DioFactory.postdata(
+      url: EndPoints.calendar,
+      data: {
+        "event_name": eventName,
+        "event_startdatetime": eventStartDateTime.toIso8601String(),
+        "event_enddatetime": eventEndDateTime.toIso8601String(),
+        "event_type": "event",
+        "event_details": eventDetails,
+        "student_id": Constants.studentId
+      },
+    );
+
+    return response;
   }
 }

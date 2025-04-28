@@ -1,8 +1,9 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:edu/src/core/api/error_handler.dart';
 import 'package:edu/src/core/api/failure.dart';
-import 'package:edu/src/features/profile/data/models/courses.dart';
 import 'package:edu/src/features/profile/data/datasources/profile_data_source.dart';
+import 'package:edu/src/features/profile/data/models/courses.dart';
 
 class ProfileRepo {
   final ProfileDataSource dataSource;
@@ -22,6 +23,27 @@ class ProfileRepo {
       DateTime date) async {
     try {
       final response = await dataSource.getCalenderEvents(date);
+      return Right(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e).failure);
+    }
+  }
+
+  Future<Either<Failure, Response<dynamic>>> addEvent({
+    required String eventName,
+    required DateTime eventStartDateTime,
+    required DateTime eventEndDateTime,
+    required String eventType,
+    required String eventDetails,
+  }) async {
+    try {
+      final response = await dataSource.addEvent(
+        eventName: eventName,
+        eventStartDateTime: eventStartDateTime,
+        eventEndDateTime: eventEndDateTime,
+        eventType: eventType,
+        eventDetails: eventDetails,
+      );
       return Right(response);
     } catch (e) {
       return Left(ErrorHandler.handle(e).failure);

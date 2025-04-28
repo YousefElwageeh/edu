@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:edu/di.dart';
 import 'package:edu/src/core/api/constant&endPoints.dart';
+import 'package:edu/src/core/app%20states/app_states.dart';
 import 'package:edu/src/core/routes/app_router.dart';
 import 'package:edu/src/core/routes/extensions.dart';
 import 'package:edu/src/core/shared_prefrence/shared_prefrence.dart';
@@ -65,6 +66,37 @@ class ProfileCubit extends Cubit<ProfileState> {
           todaySchedule.addAll(coursesData);
           log(todaySchedule.length.toString());
           emit(ProfileLoaded(coursesData));
+        },
+      );
+    } catch (e) {
+      emit(ProfileError(e.toString()));
+    }
+  }
+
+  Future<void> addEvent({
+    required String eventName,
+    required DateTime eventStartDateTime,
+    required DateTime eventEndDateTime,
+    required String eventType,
+    required String eventDetails,
+    DateTime? date,
+  }) async {
+    try {
+      final result = await repo.addEvent(
+        eventName: eventName,
+        eventStartDateTime: eventStartDateTime,
+        eventEndDateTime: eventEndDateTime,
+        eventType: eventType,
+        eventDetails: eventDetails,
+      );
+      result.fold(
+        (failure) => emit(ProfileError(failure.message)),
+        (coursesData) {
+          //   todaySchedule.add(coursesData);
+          log(todaySchedule.length.toString());
+          getCalenderEvents(date: date);
+          AppStates.SucessToast('Event created successfully');
+          emit(ProfileLoaded(todaySchedule));
         },
       );
     } catch (e) {
