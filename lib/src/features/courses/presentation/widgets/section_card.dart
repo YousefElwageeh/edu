@@ -1,18 +1,25 @@
+import 'dart:developer';
+
+import 'package:edu/src/config/theme/colorManger.dart';
+import 'package:edu/src/core/api/constant&endPoints.dart';
 import 'package:edu/src/core/routes/app_router.dart';
 import 'package:edu/src/core/routes/extensions.dart';
+import 'package:edu/src/features/courses/data/models/leactures.dart';
 import 'package:edu/src/features/courses/data/models/quizes.dart';
 import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class SectionCard extends StatelessWidget {
+class SectionCard<T> extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
   final Color color;
   final Color borderColor;
-  final List<String> items;
+  final List<T> items;
 
   const SectionCard({
     super.key,
@@ -78,43 +85,67 @@ class SectionCard extends StatelessWidget {
                   ),
                 ),
               ),
-              children: items
-                  .map<Widget>((item) => Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 4.h, horizontal: 18.w),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.circle,
-                                size: 8, color: Colors.grey),
-                            SizedBox(width: 8.w),
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  if (title == 'Quiz') {
-                                    Quizes quiz = context
-                                        .read<CoursesCubit>()
-                                        .quizes
-                                        .firstWhere((element) => item.contains(
-                                            element.courseId.toString()));
-                                    context.goTo(Routes.quizRoute,
-                                        arguments: quiz);
-                                  } else if (title == 'Project') {
-                                    context.goTo(
-                                      Routes.projectRoute,
-                                    );
-                                  }
-                                },
-                                child: Text(
-                                  item,
-                                  style: TextStyle(
-                                      fontSize: 13.sp, color: Colors.black87),
-                                ),
-                              ),
-                            )
-                          ],
+              children: items.indexed.map<Widget>((item) {
+                return Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 4.h, horizontal: 18.w),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.circle, size: 8, color: Colors.grey),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () async {
+                            if (title == 'Quiz') {
+                              final quiz = context
+                                  .read<CoursesCubit>()
+                                  .quizes
+                                  .firstWhere((e) => e == item.$2);
+                              context.goTo(Routes.quizRoute, arguments: quiz);
+                            } else if (title == 'Project') {
+                              context.goTo(
+                                Routes.projectRoute,
+                              );
+                            } else if (title == 'Section') {
+                              Session? leacture = context
+                                  .read<CoursesCubit>()
+                                  .sectionsMaterial
+                                  .course
+                                  ?.session
+                                  ?.firstWhere((e) => e == item.$2);
+
+                              log(leacture?.sessionFilePath.toString() ?? "");
+                              launchUrl(
+                                Uri.parse("${leacture?.sessionFilePath}"),
+                                mode: LaunchMode.externalNonBrowserApplication,
+                              );
+                            } else if (title == 'Lecture') {
+                              Session? leacture = context
+                                  .read<CoursesCubit>()
+                                  .leactures
+                                  .course
+                                  ?.session
+                                  ?.firstWhere((element) => element == item.$2);
+                              launchUrl(
+                                Uri.parse("${leacture?.sessionFilePath}"),
+                                mode: LaunchMode.externalNonBrowserApplication,
+                              );
+                            }
+                          },
+                          child: Text(
+                            "${item.$2.toString().replaceAll('Instance of', '')} ${item.$1 + 1}",
+                            style: TextStyle(
+                              fontSize: 13.sp,
+                              color: ColorsManager.primaryColor,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
                         ),
-                      ))
-                  .toList(),
+                      )
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
           ),
         );

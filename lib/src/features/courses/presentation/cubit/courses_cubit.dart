@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:edu/di.dart';
 import 'package:edu/src/core/api/constant&endPoints.dart';
 import 'package:edu/src/features/courses/data/models/course.dart';
+import 'package:edu/src/features/courses/data/models/leactures.dart';
 import 'package:edu/src/features/courses/data/models/quizes.dart';
 import 'package:edu/src/features/home/data/models/weekly_dead_lines.dart';
 import 'package:edu/src/features/profile/data/models/courses.dart';
@@ -36,11 +37,11 @@ class CoursesCubit extends Cubit<CoursesState> {
 
   List<Quizes> quizes = [];
   Future<void> getQuizes(
-    String courseName,
+    String courseid,
   ) async {
     emit(const GetQuizes());
     try {
-      final result = await repo.getQuizes(courseName: courseName);
+      final result = await repo.getQuizes(courseid: courseid);
       result.fold(
         (failure) => emit(GetQuizesError()),
         (quizesData) {
@@ -55,6 +56,54 @@ class CoursesCubit extends Cubit<CoursesState> {
     } catch (e) {
       log(e.toString());
       emit(GetQuizesError());
+    }
+  }
+
+  Leactures leactures = Leactures();
+  Future<void> getLectures(int courseid) async {
+    emit(const GetLectures());
+    try {
+      final result = await repo.getLectures(courseid);
+      result.fold(
+        (failure) => emit(GetLecturesError()),
+        (lecturesData) {
+          leactures = lecturesData;
+          sections.elementAt(0)['items'] = leactures.course?.session
+                  ?.map((e) => "Lecture ${e.sessionId}")
+                  .toList() ??
+              [""];
+          emit(GetLecturesLoaded());
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+      emit(GetLecturesError());
+    }
+  }
+
+  Leactures sectionsMaterial = Leactures();
+
+  Future<void> getSections(int courseid) async {
+    emit(const GetSections());
+    try {
+      final result = await repo.getSections(courseid);
+      result.fold(
+        (failure) => emit(GetSectionsError()),
+        (sectionsData) {
+          sectionsMaterial = sectionsData;
+          sections.elementAt(1)['items'] = sectionsMaterial.course?.session
+                  ?.map((e) => "Section ${e.sessionId}")
+                  .toList() ??
+              [""];
+          log(sectionsMaterial.course?.session.toString() ?? '');
+
+          log(sections.elementAt(1)['items'].toString());
+          emit(GetSectionsLoaded());
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+      emit(GetSectionsError());
     }
   }
 

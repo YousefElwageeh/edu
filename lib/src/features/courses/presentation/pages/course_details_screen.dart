@@ -1,5 +1,7 @@
 import 'package:edu/src/core/routes/app_router.dart';
 import 'package:edu/src/core/routes/extensions.dart';
+import 'package:edu/src/features/courses/data/models/leactures.dart';
+import 'package:edu/src/features/courses/data/models/quizes.dart';
 import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:edu/src/features/courses/presentation/widgets/section_card.dart';
 import 'package:flutter/material.dart';
@@ -8,11 +10,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CourseDetailsScreen extends StatefulWidget {
   final String courseName;
+  final int courseId;
   final CoursesCubit cubit;
 
   const CourseDetailsScreen({
     super.key,
     required this.courseName,
+    required this.courseId,
     required this.cubit,
   });
 
@@ -23,7 +27,9 @@ class CourseDetailsScreen extends StatefulWidget {
 class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
   @override
   void initState() {
-    context.read<CoursesCubit>().getQuizes(widget.courseName);
+    context.read<CoursesCubit>().getQuizes(widget.courseId.toString());
+    context.read<CoursesCubit>().getLectures(widget.courseId);
+    context.read<CoursesCubit>().getSections(widget.courseId);
     super.initState();
   }
 
@@ -41,21 +47,100 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
       body: SafeArea(
         child: BlocBuilder<CoursesCubit, CoursesState>(
           builder: (context, state) {
-            return ListView.separated(
-              padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 12.w),
-              itemCount: context.read<CoursesCubit>().sections.length,
-              separatorBuilder: (_, __) => SizedBox(height: 18.h),
-              itemBuilder: (context, index) {
-                final section = context.read<CoursesCubit>().sections[index];
-                return SectionCard(
-                  title: section['title'] as String,
-                  subtitle: section['subtitle'] as String,
-                  icon: section['icon'] as IconData,
-                  color: section['color'] as Color,
-                  borderColor: section['border'] as Color,
-                  items: section['items'] as List<String>,
-                );
-              },
+            return SingleChildScrollView(
+              child: Column(
+                spacing: 15,
+                children: [
+                  SectionCard<Session>(
+                      title: context.read<CoursesCubit>().sections[0]['title']
+                          as String,
+                      subtitle: context.read<CoursesCubit>().sections[0]
+                          ['subtitle'] as String,
+                      icon: context.read<CoursesCubit>().sections[0]['icon']
+                          as IconData,
+                      color: context.read<CoursesCubit>().sections[0]['color']
+                          as Color,
+                      borderColor: context.read<CoursesCubit>().sections[0]
+                          ['border'] as Color,
+                      items: context
+                              .read<CoursesCubit>()
+                              .leactures
+                              .course
+                              ?.session ??
+                          []),
+                  SectionCard<Session>(
+                      title: context.read<CoursesCubit>().sections[1]['title']
+                          as String,
+                      subtitle: context.read<CoursesCubit>().sections[1]
+                          ['subtitle'] as String,
+                      icon: context.read<CoursesCubit>().sections[1]['icon']
+                          as IconData,
+                      color: context.read<CoursesCubit>().sections[1]['color']
+                          as Color,
+                      borderColor: context.read<CoursesCubit>().sections[1]
+                          ['border'] as Color,
+                      items: context
+                              .read<CoursesCubit>()
+                              .sectionsMaterial
+                              .course
+                              ?.session ??
+                          []),
+                  SectionCard<String>(
+                    title: context.read<CoursesCubit>().sections[2]['title']
+                        as String,
+                    subtitle: context.read<CoursesCubit>().sections[2]
+                        ['subtitle'] as String,
+                    icon: context.read<CoursesCubit>().sections[2]['icon']
+                        as IconData,
+                    color: context.read<CoursesCubit>().sections[2]['color']
+                        as Color,
+                    borderColor: context.read<CoursesCubit>().sections[2]
+                        ['border'] as Color,
+                    items: context.read<CoursesCubit>().sections[2]['items']
+                        as List<String>,
+                  ),
+                  SectionCard<Quizes>(
+                    title: context.read<CoursesCubit>().sections[3]['title']
+                        as String,
+                    subtitle: context.read<CoursesCubit>().sections[3]
+                        ['subtitle'] as String,
+                    icon: context.read<CoursesCubit>().sections[3]['icon']
+                        as IconData,
+                    color: context.read<CoursesCubit>().sections[3]['color']
+                        as Color,
+                    borderColor: context.read<CoursesCubit>().sections[3]
+                        ['border'] as Color,
+                    items: context.read<CoursesCubit>().quizes,
+                  ),
+                  SectionCard<String>(
+                    title: context.read<CoursesCubit>().sections[4]['title']
+                        as String,
+                    subtitle: context.read<CoursesCubit>().sections[4]
+                        ['subtitle'] as String,
+                    icon: context.read<CoursesCubit>().sections[4]['icon']
+                        as IconData,
+                    color: context.read<CoursesCubit>().sections[4]['color']
+                        as Color,
+                    borderColor: context.read<CoursesCubit>().sections[4]
+                        ['border'] as Color,
+                    items: context.read<CoursesCubit>().sections[4]['items']
+                        as List<String>,
+                  ),
+                  SectionCard<String>(
+                    title: context.read<CoursesCubit>().sections[5]['title']
+                        as String,
+                    subtitle: context.read<CoursesCubit>().sections[5]
+                        ['subtitle'] as String,
+                    icon: context.read<CoursesCubit>().sections[5]['icon']
+                        as IconData,
+                    color: context.read<CoursesCubit>().sections[5]['color']
+                        as Color,
+                    borderColor: context.read<CoursesCubit>().sections[5]
+                        ['border'] as Color,
+                    items: const [],
+                  )
+                ],
+              ),
             );
           },
         ),

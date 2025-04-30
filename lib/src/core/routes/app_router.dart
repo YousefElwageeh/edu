@@ -46,6 +46,7 @@ class AppRouter {
           builder: (_) => BlocProvider<CoursesCubit>.value(
             value: (arguments as CourseDetailsScreen).cubit,
             child: CourseDetailsScreen(
+              courseId: (arguments).courseId,
               courseName: (arguments).courseName,
               cubit: (arguments).cubit,
             ),

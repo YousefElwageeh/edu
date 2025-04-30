@@ -37,17 +37,19 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.0
+  flutter_downloader: ^1.12.0
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.4
   flutter_screenutil: ^5.9.3
   flutter_secure_storage: ^9.2.4
+  flutter_timer_countdown: ^1.0.7
   fluttertoast: ^8.2.12
   get_it: ^8.0.3
   intl: ^0.20.2
   pretty_dio_logger: ^1.4.0
-  flutter_launcher_icons: ^0.14.3
-  flutter_native_splash: ^2.4.4
-
   shared_preferences: ^2.5.3
   table_calendar: ^3.0.9
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_lints: ^4.0.0
@@ -57,7 +59,6 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter packages.
-
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true

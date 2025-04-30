@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/quiz_option.dart';
 import '../widgets/progress_bar.dart';
+import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 
 class QuizScreen extends StatefulWidget {
   final Quizes quizes;
@@ -68,14 +69,32 @@ class _QuizScreenState extends State<QuizScreen> {
                     ],
                   ),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.timer_outlined),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${widget.quizes.quizDuration} MIN',
-                        style: TextStyle(
+                      Icon(
+                        Icons.timer_outlined,
+                        color: Colors.grey[600],
+                      ),
+                      const SizedBox(width: 10),
+                      TimerCountdown(
+                        format: CountDownTimerFormat.minutesSeconds,
+                        colonsTextStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        descriptionTextStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        timeTextStyle: TextStyle(
                           color: Colors.grey[600],
                         ),
+                        onEnd: () {
+                          Navigator.of(context).pop();
+                          AppStates.ErrorToast("Time is up");
+                        },
+                        endTime: DateTime.now().add(Duration(
+                            minutes: int.parse(
+                                    "${widget.quizes.quizDuration?.split(":")[1]}")
+                                .toInt())),
                       ),
                     ],
                   ),

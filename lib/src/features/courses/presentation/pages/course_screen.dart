@@ -59,6 +59,7 @@ class _CourseScreenState extends State<CourseScreen> {
                         onTap: () {
                           context.goTo(Routes.courseRoute,
                               arguments: CourseDetailsScreen(
+                                courseId: courseData.course?.courseId ?? 0,
                                 courseName: courseData.course?.courseName ?? '',
                                 cubit: context.read<CoursesCubit>(),
                               ));

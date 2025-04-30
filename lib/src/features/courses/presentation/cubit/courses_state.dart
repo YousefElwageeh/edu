@@ -33,3 +33,23 @@ class GetQuizes extends CoursesState {
 class GetQuizesLoaded extends CoursesState {}
 
 class GetQuizesError extends CoursesState {}
+
+class GetLectures extends CoursesState {
+  const GetLectures();
+  @override
+  List<Object> get props => [];
+}
+
+class GetLecturesLoaded extends CoursesState {}
+
+class GetLecturesError extends CoursesState {}
+
+class GetSections extends CoursesState {
+  const GetSections();
+  @override
+  List<Object> get props => [];
+}
+
+class GetSectionsLoaded extends CoursesState {}
+
+class GetSectionsError extends CoursesState {}
