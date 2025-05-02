@@ -1,10 +1,15 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:edu/di.dart';
 import 'package:edu/src/core/api/constant&endPoints.dart';
+import 'package:edu/src/core/app%20states/app_states.dart';
+import 'package:edu/src/core/routes/extensions.dart';
+import 'package:edu/src/features/courses/data/models/answers_model.dart';
 import 'package:edu/src/features/courses/data/models/course.dart';
 import 'package:edu/src/features/courses/data/models/leactures.dart';
+import 'package:edu/src/features/courses/data/models/project_model.dart';
 import 'package:edu/src/features/courses/data/models/quizes.dart';
 import 'package:edu/src/features/home/data/models/weekly_dead_lines.dart';
 import 'package:edu/src/features/profile/data/models/courses.dart';
@@ -104,6 +109,120 @@ class CoursesCubit extends Cubit<CoursesState> {
     } catch (e) {
       log(e.toString());
       emit(GetSectionsError());
+    }
+  }
+
+  List<Assignment> assignments = [];
+  Future<void> getAssignments(int courseid) async {
+    emit(const GetAssignments());
+    try {
+      final result = await repo.getAssignments(courseid);
+      result.fold(
+        (failure) => emit(GetAssignmentsError()),
+        (assignmentsData) {
+          assignments = assignmentsData;
+          sections.elementAt(2)['items'] =
+              assignments.map((e) => "Assignment ${e.assignId}").toList();
+
+          emit(GetAssignmentsLoaded());
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+      emit(GetAssignmentsError());
+    }
+  }
+
+  List<Projects> projects = [];
+  Future<void> getProjects(int courseid) async {
+    emit(const GetProjects());
+    try {
+      final result = await repo.getProjects(courseid);
+      result.fold(
+        (failure) => emit(GetProjectsError()),
+        (projectsData) {
+          projects = projectsData;
+          sections.elementAt(4)['items'] =
+              projects.map((e) => "Project ${e.activityTitle}").toList();
+          emit(GetProjectsLoaded());
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+      emit(GetProjectsError());
+    }
+  }
+
+  File? fileData;
+  Future<void> uplodeProject(
+      Assignment project, File file, BuildContext context) async {
+    emit(const UplodeProject());
+    try {
+      final result = await repo.uplodeProject(project, file);
+      result.fold(
+        (failure) => emit(UplodeProjectError()),
+        (projectsData) {
+          sections.elementAt(4)['items'] =
+              projects.map((e) => "Project ${e.activityTitle}").toList();
+          AppStates.SucessToast("Assignment uploaded successfully");
+          context.back();
+          fileData = null;
+          projects
+              .firstWhere((e) => e.activityId == project.assignId)
+              .isFinished = true;
+          emit(UplodeProjectLoaded());
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+      AppStates.ErrorToast("Failed to upload project");
+      emit(UplodeProjectError());
+    }
+  }
+
+  Future<void> uplodeAssignment(
+      Assignment assignment, File file, BuildContext context) async {
+    emit(const UplodeAssignment());
+    try {
+      final result = await repo.uplodeAssignment(assignment, file);
+      result.fold(
+        (failure) => emit(UplodeAssignmentError()),
+        (assignmentsData) {
+          sections.elementAt(2)['items'] =
+              assignments.map((e) => "Assignment ${e.assignId}").toList();
+          fileData = null;
+          AppStates.SucessToast("Assignment uploaded successfully");
+          context.back();
+          assignments
+              .firstWhere((e) => e.assignId == assignment.assignId)
+              .isFinished = true;
+          emit(UplodeAssignmentLoaded());
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+      AppStates.ErrorToast("Failed to upload assignment");
+      emit(UplodeAssignmentError());
+    }
+  }
+
+  Future<void> recordQuizScore(List<Answers> answersData, String quizID) async {
+    emit(const RecordQuizScore());
+    try {
+      final result = await repo.recordQuizScore(answersData, quizID);
+      result.fold(
+        (failure) => emit(RecordQuizScoreError()),
+        (assignmentsData) {
+          sections.elementAt(2)['items'] =
+              assignments.map((e) => "Assignment ${e.assignId}").toList();
+          quizes.firstWhere((e) => e.quizId.toString() == quizID).isFinished =
+              true;
+          emit(RecordQuizScoreLoaded());
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+      emit(RecordQuizScoreError());
     }
   }
 

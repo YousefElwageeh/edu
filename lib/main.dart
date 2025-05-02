@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:edu/bloc_observer.dart';
 import 'package:edu/di.dart';
@@ -9,9 +11,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:logging/logging.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: "https://iuiwdjtmdeempcqxeuhf.supabase.co",
+    anonKey: Constants.apiKey,
+  );
+  final supabaseLogger = Logger('supabase');
+  hierarchicalLoggingEnabled = true;
+  supabaseLogger.level =
+      Level.ALL; // custom log level filtering, default is Level.INFO
+  supabaseLogger.onRecord.listen((record) {
+    log('${record.level.name}: ${record.time}: ${record.message}');
+  });
   await initAppModule();
   Bloc.observer = MyBlocObserver();
   await FlutterDownloader.initialize(

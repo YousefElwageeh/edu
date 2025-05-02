@@ -10,6 +10,7 @@ import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:edu/src/features/courses/presentation/pages/course_details_screen.dart';
 import 'package:edu/src/features/courses/presentation/pages/project_screen.dart';
 import 'package:edu/src/features/courses/presentation/pages/quiz_screen.dart';
+import 'package:edu/src/features/home/data/models/weekly_dead_lines.dart';
 import 'package:edu/src/features/home/data/repositories/home_repository_impl.dart';
 import 'package:edu/src/features/home/presentation/cubit/home_cubit.dart';
 import 'package:edu/src/features/home/presentation/pages/layout.dart';
@@ -33,7 +34,16 @@ class AppRouter {
     switch (settings.name) {
       case Routes.projectRoute:
         return MaterialPageRoute(
-          builder: (_) => const ProjectScreen(),
+          builder: (_) {
+            return BlocProvider.value(
+              value: (arguments as ProjectScreen).cubit,
+              child: ProjectScreen(
+                assignment: (arguments).assignment,
+                isAssignment: (arguments).isAssignment,
+                cubit: (arguments).cubit,
+              ),
+            );
+          },
         );
       case Routes.quizRoute:
         return MaterialPageRoute(

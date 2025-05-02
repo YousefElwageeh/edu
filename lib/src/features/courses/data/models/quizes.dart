@@ -11,6 +11,7 @@ class Quizes {
   List<Question>? questions;
   List<Student>? student;
   Course? course;
+  bool isFinished = false;
 
   Quizes({
     this.quizId,
@@ -21,6 +22,7 @@ class Quizes {
     this.instructorId,
     this.courseId,
     this.questions,
+    this.isFinished = false,
     this.student,
     this.course,
   });

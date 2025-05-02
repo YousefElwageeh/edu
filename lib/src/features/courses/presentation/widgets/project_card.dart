@@ -1,10 +1,12 @@
+import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProjectCard extends StatelessWidget {
   final String title;
   final String description;
   final DateTime dueDate;
-  final bool isSubmitted;
+
   final VoidCallback onViewInstructions;
   final VoidCallback onUpload;
   final VoidCallback onSubmit;
@@ -14,7 +16,6 @@ class ProjectCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.dueDate,
-    required this.isSubmitted,
     required this.onViewInstructions,
     required this.onUpload,
     required this.onSubmit,
@@ -51,16 +52,16 @@ class ProjectCard extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.calendar_today,
                 size: 16,
-                color: isSubmitted ? Colors.pink : Colors.indigo,
+                color: Colors.indigo,
               ),
               const SizedBox(width: 8),
               Text(
                 'Due: ${dueDate.toString().split(' ')[0]}',
-                style: TextStyle(
-                  color: isSubmitted ? Colors.pink : Colors.indigo,
+                style: const TextStyle(
+                  color: Colors.indigo,
                 ),
               ),
             ],
@@ -76,19 +77,21 @@ class ProjectCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: isSubmitted ? Colors.pink : Colors.indigo,
+                color: Colors.indigo,
                 style: BorderStyle.solid,
               ),
             ),
             child: Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.cloud_upload_outlined,
                   size: 48,
-                  color: isSubmitted ? Colors.pink : Colors.indigo,
+                  color: Colors.indigo,
                 ),
                 const SizedBox(height: 8),
-                const Text('Drag and drop project file here'),
+                Text(context.read<CoursesCubit>().fileData != null
+                    ? 'your file uploaded successfully'
+                    : 'Drag and drop project file here'),
                 const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -96,10 +99,10 @@ class ProjectCard extends StatelessWidget {
                     const Text('or '),
                     TextButton(
                       onPressed: onUpload,
-                      child: Text(
+                      child: const Text(
                         'Upload File',
                         style: TextStyle(
-                          color: isSubmitted ? Colors.pink : Colors.indigo,
+                          color: Colors.indigo,
                         ),
                       ),
                     ),
@@ -114,7 +117,7 @@ class ProjectCard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onSubmit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isSubmitted ? Colors.pink : Colors.indigo,
+                backgroundColor: Colors.indigo,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(

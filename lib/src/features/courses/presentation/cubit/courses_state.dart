@@ -53,3 +53,53 @@ class GetSections extends CoursesState {
 class GetSectionsLoaded extends CoursesState {}
 
 class GetSectionsError extends CoursesState {}
+
+class GetAssignments extends CoursesState {
+  const GetAssignments();
+  @override
+  List<Object> get props => [];
+}
+
+class GetAssignmentsLoaded extends CoursesState {}
+
+class GetAssignmentsError extends CoursesState {}
+
+class GetProjects extends CoursesState {
+  const GetProjects();
+  @override
+  List<Object> get props => [];
+}
+
+class GetProjectsLoaded extends CoursesState {}
+
+class GetProjectsError extends CoursesState {}
+
+class UplodeProject extends CoursesState {
+  const UplodeProject();
+  @override
+  List<Object> get props => [];
+}
+
+class UplodeProjectLoaded extends CoursesState {}
+
+class UplodeProjectError extends CoursesState {}
+
+class UplodeAssignment extends CoursesState {
+  const UplodeAssignment();
+  @override
+  List<Object> get props => [];
+}
+
+class UplodeAssignmentLoaded extends CoursesState {}
+
+class UplodeAssignmentError extends CoursesState {}
+
+class RecordQuizScore extends CoursesState {
+  const RecordQuizScore();
+  @override
+  List<Object> get props => [];
+}
+
+class RecordQuizScoreLoaded extends CoursesState {}
+
+class RecordQuizScoreError extends CoursesState {}

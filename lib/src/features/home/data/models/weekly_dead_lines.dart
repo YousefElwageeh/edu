@@ -74,6 +74,7 @@ class Assignment {
   int? instructorId;
   DateTime? assignDuedate;
   String? assignDescription;
+  bool isFinished;
 
   Assignment({
     this.assignId,
@@ -82,6 +83,7 @@ class Assignment {
     this.instructorId,
     this.assignDuedate,
     this.assignDescription,
+    this.isFinished = false,
   });
 
   factory Assignment.fromRawJson(String str) =>

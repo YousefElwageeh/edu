@@ -2,11 +2,15 @@ import 'dart:developer';
 
 import 'package:edu/src/config/theme/colorManger.dart';
 import 'package:edu/src/core/api/constant&endPoints.dart';
+import 'package:edu/src/core/app%20states/app_states.dart';
 import 'package:edu/src/core/routes/app_router.dart';
 import 'package:edu/src/core/routes/extensions.dart';
 import 'package:edu/src/features/courses/data/models/leactures.dart';
+import 'package:edu/src/features/courses/data/models/project_model.dart';
 import 'package:edu/src/features/courses/data/models/quizes.dart';
 import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
+import 'package:edu/src/features/courses/presentation/pages/project_screen.dart';
+import 'package:edu/src/features/home/data/models/weekly_dead_lines.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -101,11 +105,34 @@ class SectionCard<T> extends StatelessWidget {
                                   .read<CoursesCubit>()
                                   .quizes
                                   .firstWhere((e) => e == item.$2);
-                              context.goTo(Routes.quizRoute, arguments: quiz);
+                              if (!quiz.isFinished) {
+                                context.goTo(Routes.quizRoute, arguments: quiz);
+                              } else {
+                                AppStates.ErrorToast("Quiz already submitted");
+                              }
                             } else if (title == 'Project') {
-                              context.goTo(
-                                Routes.projectRoute,
-                              );
+                              final project = context
+                                  .read<CoursesCubit>()
+                                  .projects
+                                  .firstWhere((e) => e == item.$2);
+                              if (!project.isFinished) {
+                                context.goTo(Routes.projectRoute,
+                                    arguments: ProjectScreen(
+                                      isAssignment: false,
+                                      cubit: context.read<CoursesCubit>(),
+                                      assignment: Assignment(
+                                        assignId: project.activityId,
+                                        assignTitle: project.activityTitle,
+                                        assignDescription:
+                                            project.activityDescription,
+                                        assignDuedate: project.activityDuedate,
+                                        instructorId: project.instructorId,
+                                      ),
+                                    ));
+                              } else {
+                                AppStates.ErrorToast(
+                                    "Assignment already submitted");
+                              }
                             } else if (title == 'Section') {
                               Session? leacture = context
                                   .read<CoursesCubit>()
@@ -130,15 +157,56 @@ class SectionCard<T> extends StatelessWidget {
                                 Uri.parse("${leacture?.sessionFilePath}"),
                                 mode: LaunchMode.externalNonBrowserApplication,
                               );
+                            } else if (title == 'Assignment') {
+                              Assignment? assignment = context
+                                  .read<CoursesCubit>()
+                                  .assignments
+                                  .firstWhere((e) => e == item.$2);
+                              if (!assignment.isFinished) {
+                                context.goTo(Routes.projectRoute,
+                                    arguments: ProjectScreen(
+                                      assignment: assignment,
+                                      isAssignment: true,
+                                      cubit: context.read<CoursesCubit>(),
+                                    ));
+                              } else {
+                                AppStates.ErrorToast(
+                                    "Assignment already submitted");
+                              }
                             }
                           },
-                          child: Text(
-                            "${item.$2.toString().replaceAll('Instance of', '')} ${item.$1 + 1}",
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              color: ColorsManager.primaryColor,
-                              decoration: TextDecoration.underline,
-                            ),
+                          child: Row(
+                            children: [
+                              Text(
+                                "$title ${item.$1 + 1}",
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  color: ColorsManager.primaryColor,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                              if (item.$2 is Quizes &&
+                                  (item.$2 as Quizes).isFinished)
+                                const Icon(
+                                  Icons.check,
+                                  color: Colors.green,
+                                  size: 20,
+                                ),
+                              if (item.$2 is Projects &&
+                                  (item.$2 as Projects).isFinished)
+                                const Icon(
+                                  Icons.check,
+                                  color: Colors.green,
+                                  size: 20,
+                                ),
+                              if (item.$2 is Assignment &&
+                                  (item.$2 as Assignment).isFinished)
+                                const Icon(
+                                  Icons.check,
+                                  color: Colors.green,
+                                  size: 20,
+                                ),
+                            ],
                           ),
                         ),
                       )

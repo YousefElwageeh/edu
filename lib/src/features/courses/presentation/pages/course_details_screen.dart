@@ -1,9 +1,11 @@
 import 'package:edu/src/core/routes/app_router.dart';
 import 'package:edu/src/core/routes/extensions.dart';
 import 'package:edu/src/features/courses/data/models/leactures.dart';
+import 'package:edu/src/features/courses/data/models/project_model.dart';
 import 'package:edu/src/features/courses/data/models/quizes.dart';
 import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:edu/src/features/courses/presentation/widgets/section_card.dart';
+import 'package:edu/src/features/home/data/models/weekly_dead_lines.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,6 +32,8 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
     context.read<CoursesCubit>().getQuizes(widget.courseId.toString());
     context.read<CoursesCubit>().getLectures(widget.courseId);
     context.read<CoursesCubit>().getSections(widget.courseId);
+    context.read<CoursesCubit>().getAssignments(widget.courseId);
+    context.read<CoursesCubit>().getProjects(widget.courseId);
     super.initState();
   }
 
@@ -85,7 +89,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               .course
                               ?.session ??
                           []),
-                  SectionCard<String>(
+                  SectionCard<Assignment>(
                     title: context.read<CoursesCubit>().sections[2]['title']
                         as String,
                     subtitle: context.read<CoursesCubit>().sections[2]
@@ -96,8 +100,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                         as Color,
                     borderColor: context.read<CoursesCubit>().sections[2]
                         ['border'] as Color,
-                    items: context.read<CoursesCubit>().sections[2]['items']
-                        as List<String>,
+                    items: context.read<CoursesCubit>().assignments,
                   ),
                   SectionCard<Quizes>(
                     title: context.read<CoursesCubit>().sections[3]['title']
@@ -112,7 +115,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                         ['border'] as Color,
                     items: context.read<CoursesCubit>().quizes,
                   ),
-                  SectionCard<String>(
+                  SectionCard<Projects>(
                     title: context.read<CoursesCubit>().sections[4]['title']
                         as String,
                     subtitle: context.read<CoursesCubit>().sections[4]
@@ -123,8 +126,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                         as Color,
                     borderColor: context.read<CoursesCubit>().sections[4]
                         ['border'] as Color,
-                    items: context.read<CoursesCubit>().sections[4]['items']
-                        as List<String>,
+                    items: context.read<CoursesCubit>().projects,
                   ),
                   SectionCard<String>(
                     title: context.read<CoursesCubit>().sections[5]['title']
