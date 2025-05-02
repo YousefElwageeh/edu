@@ -109,7 +109,7 @@ class Question {
   String toRawJson() => json.encode(toJson());
 
   factory Question.fromJson(Map<String, dynamic> json) => Question(
-        marks: json["marks"],
+        marks: json["marks"].toString(),
         options: json["options"] == null
             ? []
             : List<String>.from(json["options"]!.map((x) => x)),

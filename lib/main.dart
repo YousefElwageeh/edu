@@ -26,6 +26,7 @@ Future<void> main() async {
       Level.ALL; // custom log level filtering, default is Level.INFO
   supabaseLogger.onRecord.listen((record) {
     log('${record.level.name}: ${record.time}: ${record.message}');
+    log('${record.error?.toString()}: ${record.time}: ${record.message}');
   });
   await initAppModule();
   Bloc.observer = MyBlocObserver();

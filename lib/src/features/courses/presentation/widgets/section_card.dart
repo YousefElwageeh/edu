@@ -10,6 +10,7 @@ import 'package:edu/src/features/courses/data/models/project_model.dart';
 import 'package:edu/src/features/courses/data/models/quizes.dart';
 import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:edu/src/features/courses/presentation/pages/project_screen.dart';
+import 'package:edu/src/features/courses/presentation/pages/quiz_screen.dart';
 import 'package:edu/src/features/home/data/models/weekly_dead_lines.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -106,7 +107,11 @@ class SectionCard<T> extends StatelessWidget {
                                   .quizes
                                   .firstWhere((e) => e == item.$2);
                               if (!quiz.isFinished) {
-                                context.goTo(Routes.quizRoute, arguments: quiz);
+                                context.goTo(Routes.quizRoute,
+                                    arguments: QuizScreen(
+                                      cubit: context.read<CoursesCubit>(),
+                                      quizes: quiz,
+                                    ));
                               } else {
                                 AppStates.ErrorToast("Quiz already submitted");
                               }

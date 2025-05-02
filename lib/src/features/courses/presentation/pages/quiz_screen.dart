@@ -1,9 +1,11 @@
 import 'dart:developer';
 
+import 'package:edu/di.dart';
 import 'package:edu/src/core/app%20states/app_states.dart';
 import 'package:edu/src/core/routes/extensions.dart';
 import 'package:edu/src/features/courses/data/models/answers_model.dart';
 import 'package:edu/src/features/courses/data/models/quizes.dart';
+import 'package:edu/src/features/courses/data/repositories/course_repo.dart';
 import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +14,9 @@ import '../widgets/progress_bar.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 
 class QuizScreen extends StatefulWidget {
+  final CoursesCubit cubit;
   final Quizes quizes;
-  const QuizScreen({super.key, required this.quizes});
+  const QuizScreen({super.key, required this.quizes, required this.cubit});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -148,6 +151,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     if (!snapshot.hasData) return const SizedBox.shrink();
                     return ScreenButtons(
                         answersData: answersData,
+                        cubit: widget.cubit,
                         pageController: pageController,
                         selectedOption: selectedOption,
                         quizes: widget.quizes);
@@ -164,12 +168,14 @@ class ScreenButtons extends StatefulWidget {
   final PageController pageController;
   final List<int> selectedOption;
   final List<Answers> answersData;
+  final CoursesCubit cubit;
   final Quizes quizes;
   const ScreenButtons(
       {super.key,
       required this.pageController,
       required this.selectedOption,
       required this.answersData,
+      required this.cubit,
       required this.quizes});
 
   @override
@@ -199,20 +205,23 @@ class _ScreenButtonsState extends State<ScreenButtons> {
           children: [
             if ((widget.pageController.page?.toInt() ?? 0) ==
                 (widget.quizes.questions?.length ?? 0) - 1)
-              ElevatedButton(
-                onPressed: () {
-                  if (!widget.selectedOption.contains(-1)) {
-                    context.read<CoursesCubit>().recordQuizScore(
-                        widget.answersData,
-                        widget.quizes.quizId.toString() ?? '');
-                    AppStates.SucessToast('Quiz Completed');
-                    context.back();
-                  } else {
-                    AppStates.ErrorToast('Please answer all questions');
-                  }
+              BlocBuilder<CoursesCubit, CoursesState>(
+                builder: (context, state) {
+                  return ElevatedButton(
+                    onPressed: () async {
+                      if (!widget.selectedOption.contains(-1)) {
+                        await widget.cubit.recordQuizScore(widget.answersData,
+                            widget.quizes.quizId.toString() ?? '');
+                        AppStates.SucessToast('Quiz Completed');
+                        context.back();
+                      } else {
+                        AppStates.ErrorToast('Please answer all questions');
+                      }
+                    },
+                    child: const Text('Finish',
+                        style: TextStyle(color: Colors.white)),
+                  );
                 },
-                child:
-                    const Text('Finish', style: TextStyle(color: Colors.white)),
               )
             else
               TextButton(

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:edu/src/core/api/constant&endPoints.dart';
@@ -26,24 +27,32 @@ class CoursesDataSource {
   }
 
   Future<List<Quizes>> getQuizes(String courseid) async {
-    final response = await Supabase.instance.client
-        .from("quiz")
-        .select("*")
-        .eq("course_id", courseid);
+    try {
+      final response = await Supabase.instance.client
+          .from("quiz")
+          .select("*")
+          .eq("course_id", courseid);
+      log(response.toString());
 
-    final response2 = await Supabase.instance.client
-        .from("student_quiz")
-        .select("*")
-        .eq("student_id", Constants.studentId!);
+      final response2 = await Supabase.instance.client
+          .from("student_quiz")
+          .select("quiz_id")
+          .eq("student_id", Constants.studentId!);
+      log(response2.toString());
 
-    List<Quizes> quizes =
-        (response as List).map((e) => Quizes.fromJson(e)).toList();
+      List<Quizes> quizes =
+          (response as List).map((e) => Quizes.fromJson(e)).toList();
 
-    for (var element in quizes) {
-      element.isFinished = response2.any((e) => e['quiz_id'] == element.quizId);
+      for (var element in quizes) {
+        element.isFinished = response2
+            .any((e) => e['quiz_id'].toString() == element.quizId.toString());
+      }
+
+      return quizes;
+    } catch (e) {
+      log("Error in getQuizes: ${e.toString()}");
+      return [];
     }
-
-    return quizes;
   }
 
   Future<Leactures> getLectures(int courseid) async {

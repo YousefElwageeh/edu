@@ -47,8 +47,12 @@ class AppRouter {
         );
       case Routes.quizRoute:
         return MaterialPageRoute(
-          builder: (_) => QuizScreen(
-            quizes: arguments as Quizes,
+          builder: (_) => BlocProvider.value(
+            value: (arguments as QuizScreen).cubit,
+            child: QuizScreen(
+              cubit: (arguments).cubit,
+              quizes: (arguments).quizes,
+            ),
           ),
         );
       case Routes.courseRoute:
