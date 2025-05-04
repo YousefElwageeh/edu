@@ -5,6 +5,8 @@ import 'package:edu/src/core/api/dio_factory.dart';
 import 'package:edu/src/core/shared_prefrence/shared_prefrence.dart';
 import 'package:edu/src/features/authntcation/data/datasources/login_data_source.dart';
 import 'package:edu/src/features/authntcation/data/repositories/login_repo.dart';
+import 'package:edu/src/features/chat/data/datasources/chat_data_source.dart';
+import 'package:edu/src/features/chat/data/repositories/chat_repo.dart';
 import 'package:edu/src/features/courses/data/datasources/courses_data_source.dart';
 import 'package:edu/src/features/courses/data/repositories/course_repo.dart';
 import 'package:edu/src/features/home/data/datasources/home_remote_data_source.dart';
@@ -88,5 +90,13 @@ preProfile() {
     di.registerLazySingleton<ProfileRepo>(
       () => ProfileRepo(di<ProfileDataSource>()),
     );
+  }
+}
+
+preChat() {
+  if (!di.isRegistered<ChatRepo>()) {
+    di.registerLazySingleton<ChatDataSource>(() => ChatDataSource());
+    di.registerLazySingleton<ChatRepo>(
+        () => ChatRepo(dataSource: di<ChatDataSource>()));
   }
 }

@@ -1,3 +1,4 @@
+import 'package:edu/src/core/app%20states/app_states.dart';
 import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -89,9 +90,13 @@ class ProjectCard extends StatelessWidget {
                   color: Colors.indigo,
                 ),
                 const SizedBox(height: 8),
-                Text(context.read<CoursesCubit>().fileData != null
-                    ? 'your file uploaded successfully'
-                    : 'Drag and drop project file here'),
+                BlocBuilder<CoursesCubit, CoursesState>(
+                  builder: (context, state) {
+                    return Text(context.read<CoursesCubit>().fileData != null
+                        ? 'your file uploaded successfully'
+                        : 'Drag and drop project file here');
+                  },
+                ),
                 const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -112,20 +117,26 @@ class ProjectCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: onSubmit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.indigo,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text('Submit'),
-            ),
+          BlocBuilder<CoursesCubit, CoursesState>(
+            builder: (context, state) {
+              return state is UplodeProject
+                  ? AppStates.LodaingState()
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: onSubmit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigo,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Submit'),
+                      ),
+                    );
+            },
           ),
         ],
       ),

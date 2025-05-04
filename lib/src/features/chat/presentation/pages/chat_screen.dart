@@ -1,29 +1,41 @@
+import 'package:edu/di.dart';
+import 'package:edu/src/features/chat/data/models/chat_model.dart';
 import 'package:flutter/material.dart';
 import '../widgets/chat_list.dart';
 import '../widgets/chat_detail.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/chat_cubit.dart';
 
-class ChatScreen extends StatelessWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({super.key});
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  @override
+  void initState() {
+    preChat();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth > 600) {
-            // Tablet/Desktop view
-            return const Row(
-              children: [
-                Expanded(flex: 1, child: ChatList()),
-                VerticalDivider(width: 1),
-                Expanded(flex: 2, child: ChatDetail()),
-              ],
+    return BlocProvider(
+      create: (context) => ChatCubit()..getChats(),
+      child: Scaffold(
+        body: BlocBuilder<ChatCubit, ChatState>(
+          builder: (context, state) {
+            List<ChatModel> chats = context.read<ChatCubit>().chatsData;
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                // Mobile view
+                return ChatList(chats: chats);
+              },
             );
-          } else {
-            // Mobile view
-            return const ChatList();
-          }
-        },
+          },
+        ),
       ),
     );
   }

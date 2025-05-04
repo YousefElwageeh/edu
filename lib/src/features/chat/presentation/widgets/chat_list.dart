@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'chat_list_item.dart';
+import 'package:edu/src/features/chat/data/models/chat_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/chat_cubit.dart';
 
 class ChatList extends StatelessWidget {
-  const ChatList({super.key});
+  final List<ChatModel> chats;
+  const ChatList({super.key, required this.chats});
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +19,9 @@ class ChatList extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              onChanged: (value) {
+                context.read<ChatCubit>().search(value);
+              },
               decoration: InputDecoration(
                 hintText: 'Search Conversation',
                 prefixIcon: const Icon(Icons.search),
@@ -30,36 +37,22 @@ class ChatList extends StatelessWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.all(8),
-        children: const [
-          ChatListItem(
-            name: 'AIS',
-            message: 'bla blaa blaa..',
-            time: '2:10 am',
-            unreadCount: 1,
-          ),
-          ChatListItem(
-            name: 'IIS',
-            message: 'bla blaa blaa..',
-            time: '2:01 am',
-          ),
-          ChatListItem(
-            name: 'e-commerce',
-            message: 'bla blaa blaa..',
-            time: '1:20 am',
-            unreadCount: 2,
-          ),
-          ChatListItem(
-            name: 'MIS',
-            message: 'bla blaa blaa..',
-            time: '4:20 pm',
-            unreadCount: 6,
-          ),
-        ],
+        children: chats
+            .map(
+              (chat) => ChatListItem(
+                chatId: chat.chatId,
+                name: chat.chatName,
+                message: chat.chatName,
+                time: '',
+                unreadCount: 0,
+              ),
+            )
+            .toList(),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {},
+      //   child: const Icon(Icons.add),
+      // ),
     );
   }
 }

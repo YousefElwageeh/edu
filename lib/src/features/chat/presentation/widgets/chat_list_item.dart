@@ -1,12 +1,16 @@
+import 'package:edu/src/features/chat/data/models/chat_model.dart';
+import 'package:edu/src/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:edu/src/features/chat/presentation/widgets/chat_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:edu/src/features/chat/presentation/pages/chat_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatListItem extends StatelessWidget {
   final String name;
   final String message;
   final String time;
   final int unreadCount;
+  final int chatId;
 
   const ChatListItem({
     super.key,
@@ -14,6 +18,7 @@ class ChatListItem extends StatelessWidget {
     required this.message,
     required this.time,
     this.unreadCount = 0,
+    required this.chatId,
   });
 
   @override
@@ -24,7 +29,11 @@ class ChatListItem extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const ChatDetail(),
+              builder: (context) => BlocProvider.value(
+                value: ChatCubit()..getChatMessages(chatId),
+                child:
+                    ChatDetail(chat: ChatModel(chatId: chatId, chatName: name)),
+              ),
             ),
           );
         }

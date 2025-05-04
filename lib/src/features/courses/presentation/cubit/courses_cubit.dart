@@ -114,7 +114,7 @@ class CoursesCubit extends Cubit<CoursesState> {
 
   List<Assignment> assignments = [];
   Future<void> getAssignments(int courseid) async {
-    emit(const GetAssignments());
+    emit(const GetProjects());
     try {
       final result = await repo.getAssignments(courseid);
       result.fold(
@@ -182,7 +182,7 @@ class CoursesCubit extends Cubit<CoursesState> {
 
   Future<void> uplodeAssignment(
       Assignment assignment, File file, BuildContext context) async {
-    emit(const UplodeAssignment());
+    emit(const UplodeProject());
     try {
       final result = await repo.uplodeAssignment(assignment, file);
       result.fold(
