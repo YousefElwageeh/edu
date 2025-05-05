@@ -212,7 +212,18 @@ class _ScreenButtonsState extends State<ScreenButtons> {
                       if (!widget.selectedOption.contains(-1)) {
                         await widget.cubit.recordQuizScore(widget.answersData,
                             widget.quizes.quizId.toString() ?? '');
-                        AppStates.SucessToast('Quiz Completed');
+                        final quiz = context
+                            .read<CoursesCubit>()
+                            .quizes
+                            .firstWhere((e) =>
+                                e.quizId.toString() ==
+                                widget.quizes.quizId.toString());
+                        final correctAnswers = widget.answersData
+                            .where((e) => e.isCorrect == true)
+                            .length;
+                        final totalQuestions = widget.quizes.questions!.length;
+                        quiz.score = ((correctAnswers / totalQuestions) * 100)
+                            .toString();
                         context.back();
                       } else {
                         AppStates.ErrorToast('Please answer all questions');
@@ -286,7 +297,7 @@ class _OptionsState extends State<Options> {
                   }
                   widget.answersData[widget.index].answer = options[i];
                   widget.answersData[widget.index].degree =
-                      widget.quizes.questions?[widget.index].marks;
+                      widget.quizes.questions?[widget.index].marks.toString();
                   widget.selectedOption[widget.index] = i;
                 });
               },

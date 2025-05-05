@@ -39,6 +39,9 @@ class ChatDataSource {
         .eq('chat_id', chatId)
         .order('msg_date_time', ascending: false)
         .map((event) => event.map((e) => MessageModel.fromJson(e)).toList());
+    log("responseString");
+    List<MessageModel> responseString = await response.first;
+    log(responseString.first.toString());
     return response;
   }
 

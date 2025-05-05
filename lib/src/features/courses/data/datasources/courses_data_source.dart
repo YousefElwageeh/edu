@@ -31,21 +31,32 @@ class CoursesDataSource {
       final response = await Supabase.instance.client
           .from("quiz")
           .select("*")
-          .eq("course_id", courseid);
+          .eq("course_id", courseid)
+          .gte("quiz_dueDateTime", DateTime.now());
       log(response.toString());
 
       final response2 = await Supabase.instance.client
           .from("student_quiz")
-          .select("quiz_id")
+          .select("*")
           .eq("student_id", Constants.studentId!);
+
       log(response2.toString());
 
       List<Quizes> quizes =
           (response as List).map((e) => Quizes.fromJson(e)).toList();
-
-      for (var element in quizes) {
-        element.isFinished = response2
-            .any((e) => e['quiz_id'].toString() == element.quizId.toString());
+      if (response2.isNotEmpty) {
+        for (var element in quizes) {
+          element.isFinished = response2
+              .any((e) => e['quiz_id'].toString() == element.quizId.toString());
+          if (element.isFinished) {
+            element.score = response2
+                .toList()
+                .firstWhere(
+                    (e) => e['quiz_id'].toString() == element.quizId.toString(),
+                    orElse: () => {"percentage": ""})['percentage']
+                .toString();
+          }
+        }
       }
 
       return quizes;
@@ -93,7 +104,8 @@ class CoursesDataSource {
     final response = await Supabase.instance.client
         .from("assignment")
         .select("*")
-        .eq("course_id", courseid);
+        .eq("course_id", courseid)
+        .gte("assign_duedate", DateTime.now());
 
     final response2 = await Supabase.instance.client
         .from("student_assignment")
@@ -115,7 +127,8 @@ class CoursesDataSource {
     final response = await Supabase.instance.client
         .from("course_activity")
         .select("*")
-        .eq("course_id", courseid);
+        .eq("course_id", courseid)
+        .gte("activity_duedate", DateTime.now());
     if (response.isEmpty) {
       return [];
     }

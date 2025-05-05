@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
-import 'package:edu/bloc_observer.dart';
+import 'package:edu/src/bloc_observer.dart';
 import 'package:edu/di.dart';
 import 'package:edu/src/config/theme/themes.dart';
 import 'package:edu/src/core/api/constant&endPoints.dart';

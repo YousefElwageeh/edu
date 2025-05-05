@@ -2,7 +2,7 @@ class MessageModel {
   int? msgId;
   String msg_content;
   String msg_date_time;
-  int senderid;
+  String senderid;
   int chat_id;
 
   MessageModel({
@@ -18,7 +18,7 @@ class MessageModel {
       //  msgId: json['msg_id'],
       msg_content: json['msg_content'],
       msg_date_time: json['msg_date_time'],
-      senderid: json['senderid'],
+      senderid: json['sender_data'],
       chat_id: json['chat_id'],
     );
   }

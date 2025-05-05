@@ -133,7 +133,7 @@ class _ChatDetailState extends State<ChatDetail> {
                             .sendMessage(MessageModel(
                               msg_content: messageController.text,
                               msg_date_time: DateTime.now().toString(),
-                              senderid: int.parse(Constants.studentId!),
+                              senderid: Constants.studentId!,
                               chat_id: widget.chat.chatId,
                             ));
                         messageController.clear();

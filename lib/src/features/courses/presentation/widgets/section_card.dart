@@ -183,7 +183,7 @@ class SectionCard<T> extends StatelessWidget {
                           child: Row(
                             children: [
                               Text(
-                                "$title ${item.$1 + 1}",
+                                "$title ${item.$1 + 1} ",
                                 style: TextStyle(
                                   fontSize: 13.sp,
                                   color: ColorsManager.primaryColor,
@@ -192,10 +192,23 @@ class SectionCard<T> extends StatelessWidget {
                               ),
                               if (item.$2 is Quizes &&
                                   (item.$2 as Quizes).isFinished)
-                                const Icon(
-                                  Icons.check,
-                                  color: Colors.green,
-                                  size: 20,
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Score ${(item.$2 as Quizes).score ?? ""}%",
+                                      style: TextStyle(
+                                        fontSize: 13.sp,
+                                        color: ColorsManager.primaryColor,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Icon(
+                                      Icons.check,
+                                      color: Colors.green,
+                                      size: 20,
+                                    ),
+                                  ],
                                 ),
                               if (item.$2 is Projects &&
                                   (item.$2 as Projects).isFinished)

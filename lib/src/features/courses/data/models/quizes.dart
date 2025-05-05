@@ -2,28 +2,28 @@ import 'dart:convert';
 
 class Quizes {
   int? quizId;
-  double? quizFullmark;
   String? quizDuration;
-  String? quizFilepath;
-  DateTime? quizDuedatetime;
+  DateTime? quizDueDateTime;
   int? instructorId;
   int? courseId;
-  List<Question>? questions;
-  List<Student>? student;
+  List<QuizQuestion>? questions;
+  String? quizTitle;
+  List<dynamic>? student;
+  bool isFinished;
+  String? score;
   Course? course;
-  bool isFinished = false;
 
   Quizes({
     this.quizId,
-    this.quizFullmark,
     this.quizDuration,
-    this.quizFilepath,
-    this.quizDuedatetime,
+    this.quizDueDateTime,
     this.instructorId,
     this.courseId,
     this.questions,
-    this.isFinished = false,
+    this.quizTitle,
     this.student,
+    this.isFinished = false,
+    this.score,
     this.course,
   });
 
@@ -33,39 +33,35 @@ class Quizes {
 
   factory Quizes.fromJson(Map<String, dynamic> json) => Quizes(
         quizId: json["quiz_id"],
-        quizFullmark: json["quiz_fullmark"],
         quizDuration: json["quiz_duration"],
-        quizFilepath: json["quiz_filepath"],
-        quizDuedatetime: json["quiz_duedatetime"] == null
+        quizDueDateTime: json["quiz_dueDateTime"] == null
             ? null
-            : DateTime.parse(json["quiz_duedatetime"]),
+            : DateTime.parse(json["quiz_dueDateTime"]),
         instructorId: json["instructor_id"],
         courseId: json["course_id"],
-        questions: json["questions"] == null
+        questions: json["quiz_questions"] == null
             ? []
-            : List<Question>.from(
-                json["questions"]!.map((x) => Question.fromJson(x))),
+            : List<QuizQuestion>.from(
+                json["quiz_questions"]!.map((x) => QuizQuestion.fromJson(x))),
+        quizTitle: json["quiz_title"],
         student: json["student"] == null
             ? []
-            : List<Student>.from(
-                json["student"]!.map((x) => Student.fromJson(x))),
+            : List<dynamic>.from(json["student"]!.map((x) => x)),
         course: json["course"] == null ? null : Course.fromJson(json["course"]),
       );
 
   Map<String, dynamic> toJson() => {
         "quiz_id": quizId,
-        "quiz_fullmark": quizFullmark,
         "quiz_duration": quizDuration,
-        "quiz_filepath": quizFilepath,
-        "quiz_duedatetime": quizDuedatetime?.toIso8601String(),
+        "quiz_dueDateTime": quizDueDateTime?.toIso8601String(),
         "instructor_id": instructorId,
         "course_id": courseId,
-        "questions": questions == null
+        "quiz_questions": questions == null
             ? []
             : List<dynamic>.from(questions!.map((x) => x.toJson())),
-        "student": student == null
-            ? []
-            : List<dynamic>.from(student!.map((x) => x.toJson())),
+        "quiz_title": quizTitle,
+        "student":
+            student == null ? [] : List<dynamic>.from(student!.map((x) => x)),
         "course": course?.toJson(),
       };
 }
@@ -90,26 +86,26 @@ class Course {
       };
 }
 
-class Question {
-  String? marks;
+class QuizQuestion {
+  int? marks;
   List<String>? options;
   String? question;
   String? correctAnswer;
 
-  Question({
+  QuizQuestion({
     this.marks,
     this.options,
     this.question,
     this.correctAnswer,
   });
 
-  factory Question.fromRawJson(String str) =>
-      Question.fromJson(json.decode(str));
+  factory QuizQuestion.fromRawJson(String str) =>
+      QuizQuestion.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Question.fromJson(Map<String, dynamic> json) => Question(
-        marks: json["marks"].toString(),
+  factory QuizQuestion.fromJson(Map<String, dynamic> json) => QuizQuestion(
+        marks: json["marks"],
         options: json["options"] == null
             ? []
             : List<String>.from(json["options"]!.map((x) => x)),
@@ -123,29 +119,5 @@ class Question {
             options == null ? [] : List<dynamic>.from(options!.map((x) => x)),
         "question": question,
         "correct_answer": correctAnswer,
-      };
-}
-
-class Student {
-  int? studentId;
-  String? studentName;
-
-  Student({
-    this.studentId,
-    this.studentName,
-  });
-
-  factory Student.fromRawJson(String str) => Student.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
-  factory Student.fromJson(Map<String, dynamic> json) => Student(
-        studentId: json["student_id"],
-        studentName: json["student_name"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "student_id": studentId,
-        "student_name": studentName,
       };
 }
