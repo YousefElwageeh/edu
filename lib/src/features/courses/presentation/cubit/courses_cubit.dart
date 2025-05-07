@@ -217,6 +217,8 @@ class CoursesCubit extends Cubit<CoursesState> {
               assignments.map((e) => "Assignment ${e.assignId}").toList();
           quizes.firstWhere((e) => e.quizId.toString() == quizID).isFinished =
               true;
+       
+             
           emit(RecordQuizScoreLoaded());
         },
       );

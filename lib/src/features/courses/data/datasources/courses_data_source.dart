@@ -31,8 +31,7 @@ class CoursesDataSource {
       final response = await Supabase.instance.client
           .from("quiz")
           .select("*")
-          .eq("course_id", courseid)
-          .gte("quiz_dueDateTime", DateTime.now());
+          .eq("course_id", courseid);
       log(response.toString());
 
       final response2 = await Supabase.instance.client
@@ -53,11 +52,26 @@ class CoursesDataSource {
                 .toList()
                 .firstWhere(
                     (e) => e['quiz_id'].toString() == element.quizId.toString(),
-                    orElse: () => {"percentage": ""})['percentage']
+                    orElse: () => {"score": ""})['score']
                 .toString();
           }
         }
       }
+// add score 0 for all quizzes that are not finished and deadline has passed
+      for (var quiz in quizes) {
+        if (!quiz.isFinished &&
+            quiz.quizDueDateTime != null &&
+            quiz.quizDueDateTime!.isBefore(DateTime.now())) {
+          quiz.score = "0";
+
+          recordQuizScore(List<Answers>.empty(), quiz.quizId.toString());
+        }
+      }
+
+      //remove all quized that passed deadline
+      quizes.removeWhere((e) =>
+          e.quizDueDateTime != null &&
+          e.quizDueDateTime!.isBefore(DateTime.now()));
 
       return quizes;
     } catch (e) {
@@ -127,8 +141,7 @@ class CoursesDataSource {
     final response = await Supabase.instance.client
         .from("course_activity")
         .select("*")
-        .eq("course_id", courseid)
-        .gte("activity_duedate", DateTime.now());
+        .eq("course_id", courseid);
     if (response.isEmpty) {
       return [];
     }
@@ -137,7 +150,8 @@ class CoursesDataSource {
     final activities = await Supabase.instance.client
         .from("activity")
         .select("*")
-        .inFilter("activity_id", activityIds);
+        .inFilter("activity_id", activityIds)
+        .gte("activity_duedate", DateTime.now());
 
     final response2 = await Supabase.instance.client
         .from("student_activity")
@@ -180,24 +194,33 @@ class CoursesDataSource {
       {
         "student_id": Constants.studentId,
         "activity_id": project.assignId,
-        "teamid": 1,
+        "team_id": 1,
         "activity_path": url,
       }
     ]);
   }
 
   Future<void> recordQuizScore(List<Answers> answersData, String quizID) async {
+    int totalDegree = 0;
+    if (answersData.isNotEmpty) {
+      List<Answers> correctAnswers = [];
+      correctAnswers = answersData.where((e) => e.isCorrect == true).toList();
+      // Calculate the total score by summing up the degrees of correct answers
+
+      if (correctAnswers.isNotEmpty) {
+        totalDegree = correctAnswers
+            .map((e) => e.degree ?? 0)
+            .fold(0, (sum, degree) => sum + degree);
+      }
+    }
+
     final response =
         await Supabase.instance.client.from("student_quiz").insert([
       {
         "student_id": Constants.studentId,
         "quiz_id": quizID,
-        "score":
-            answersData.where((element) => element.isCorrect == true).length,
-        "percentage":
-            (answersData.where((element) => element.isCorrect == true).length /
-                    answersData.length) *
-                100,
+        "score": totalDegree,
+        "student_answers": answersData.map((e) => e.answer).toList().toString(),
       }
     ]);
   }

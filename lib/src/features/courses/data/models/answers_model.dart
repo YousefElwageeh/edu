@@ -1,7 +1,7 @@
 class Answers {
   String? answer;
   bool? isCorrect;
-  String? degree;
+  int? degree;
 
   Answers({
     this.answer,

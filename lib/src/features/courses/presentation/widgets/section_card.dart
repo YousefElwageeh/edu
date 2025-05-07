@@ -190,12 +190,21 @@ class SectionCard<T> extends StatelessWidget {
                                   decoration: TextDecoration.underline,
                                 ),
                               ),
+                              if (item.$2 is Quizes)
+                                Text(
+                                  " ${(item.$2 as Quizes).quizTitle ?? ""} ",
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    color: ColorsManager.primaryColor,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
                               if (item.$2 is Quizes &&
                                   (item.$2 as Quizes).isFinished)
                                 Row(
                                   children: [
                                     Text(
-                                      "Score ${(item.$2 as Quizes).score ?? ""}%",
+                                      " Score ${(item.$2 as Quizes).score ?? ""} ",
                                       style: TextStyle(
                                         fontSize: 13.sp,
                                         color: ColorsManager.primaryColor,

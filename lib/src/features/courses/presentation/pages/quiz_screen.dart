@@ -44,119 +44,122 @@ class _QuizScreenState extends State<QuizScreen> {
     PageController pageController = PageController();
 
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.quizes.course?.courseName ?? '',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      // const SizedBox(height: 4),
-                      // Text(
-                      //   'Session 1',
-                      //   style: TextStyle(
-                      //     color: Colors.grey[600],
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.timer_outlined,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 10),
-                      TimerCountdown(
-                        format: CountDownTimerFormat.minutesSeconds,
-                        colonsTextStyle: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                        descriptionTextStyle: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                        timeTextStyle: TextStyle(
-                          color: Colors.grey[600],
-                        ),
-                        onEnd: () {
-                          Navigator.of(context).pop();
-                          AppStates.ErrorToast("Time is up");
-                        },
-                        endTime: DateTime.now().add(Duration(
-                            minutes: int.parse(
-                                    "${widget.quizes.quizDuration?.split(":")[1]}")
-                                .toInt())),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              // QuizProgressBar(
-              //   progress: (pageController.page?.toInt() ?? 0) /
-              //       (widget.quizes.questions?.length ?? 0),
-              // ),
-              const SizedBox(height: 32),
-              Expanded(
-                child: PageView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  controller: pageController,
-                  itemCount: widget.quizes.questions?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    return Column(
+      body: PopScope(
+        canPop: false,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Question ${index + 1}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.quizes.questions?[index].question ?? '',
+                          widget.quizes.course?.courseName ?? '',
                           style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 32),
-                        Options(
-                            quizes: widget.quizes,
-                            index: index,
-                            selectedOption: selectedOption,
-                            answersData: answersData)
+                        // const SizedBox(height: 4),
+                        // Text(
+                        //   'Session 1',
+                        //   style: TextStyle(
+                        //     color: Colors.grey[600],
+                        //   ),
+                        // ),
                       ],
-                    );
-                  },
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.timer_outlined,
+                          color: Colors.grey[600],
+                        ),
+                        const SizedBox(width: 10),
+                        TimerCountdown(
+                          format: CountDownTimerFormat.minutesSeconds,
+                          colonsTextStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          descriptionTextStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          timeTextStyle: TextStyle(
+                            color: Colors.grey[600],
+                          ),
+                          onEnd: () {
+                            Navigator.of(context).pop();
+                            AppStates.ErrorToast("Time is up");
+                          },
+                          endTime: DateTime.now().add(Duration(
+                              minutes: int.parse(
+                                      "${widget.quizes.quizDuration?.split(":")[1]}")
+                                  .toInt())),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
+                const SizedBox(height: 16),
+                // QuizProgressBar(
+                //   progress: (pageController.page?.toInt() ?? 0) /
+                //       (widget.quizes.questions?.length ?? 0),
+                // ),
+                const SizedBox(height: 32),
+                Expanded(
+                  child: PageView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    controller: pageController,
+                    itemCount: widget.quizes.questions?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          Text(
+                            'Question ${index + 1}',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            widget.quizes.questions?[index].question ?? '',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          Options(
+                              quizes: widget.quizes,
+                              index: index,
+                              selectedOption: selectedOption,
+                              answersData: answersData)
+                        ],
+                      );
+                    },
+                  ),
+                ),
 
-              FutureBuilder(
-                  future: Future.value(true),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) return const SizedBox.shrink();
-                    return ScreenButtons(
-                        answersData: answersData,
-                        cubit: widget.cubit,
-                        pageController: pageController,
-                        selectedOption: selectedOption,
-                        quizes: widget.quizes);
-                  }),
-            ],
+                FutureBuilder(
+                    future: Future.value(true),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return const SizedBox.shrink();
+                      return ScreenButtons(
+                          answersData: answersData,
+                          cubit: widget.cubit,
+                          pageController: pageController,
+                          selectedOption: selectedOption,
+                          quizes: widget.quizes);
+                    }),
+              ],
+            ),
           ),
         ),
       ),
@@ -218,12 +221,17 @@ class _ScreenButtonsState extends State<ScreenButtons> {
                             .firstWhere((e) =>
                                 e.quizId.toString() ==
                                 widget.quizes.quizId.toString());
-                        final correctAnswers = widget.answersData
+                        List<Answers> correctAnswers = widget.answersData
                             .where((e) => e.isCorrect == true)
-                            .length;
-                        final totalQuestions = widget.quizes.questions!.length;
-                        quiz.score = ((correctAnswers / totalQuestions) * 100)
-                            .toString();
+                            .toList();
+                        // Calculate the total score by summing up the degrees of correct answers
+                        int totalDegree = 0;
+                        if (correctAnswers.isNotEmpty) {
+                          totalDegree = correctAnswers
+                              .map((e) => e.degree ?? 0)
+                              .fold(0, (sum, degree) => sum + degree);
+                        }
+                        quiz.score = totalDegree.toString();
                         context.back();
                       } else {
                         AppStates.ErrorToast('Please answer all questions');
@@ -297,7 +305,7 @@ class _OptionsState extends State<Options> {
                   }
                   widget.answersData[widget.index].answer = options[i];
                   widget.answersData[widget.index].degree =
-                      widget.quizes.questions?[widget.index].marks.toString();
+                      widget.quizes.questions?[widget.index].marks;
                   widget.selectedOption[widget.index] = i;
                 });
               },

@@ -11,6 +11,7 @@ class Quizes {
   List<dynamic>? student;
   bool isFinished;
   String? score;
+
   Course? course;
 
   Quizes({
