@@ -48,7 +48,7 @@ class _CourseScreenState extends State<CourseScreen> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 16.w,
                       mainAxisSpacing: 16.h,
-                      childAspectRatio: 1.1,
+                      childAspectRatio: 1,
                     ),
                     itemCount: courses.length > 10 ? 10 : courses.length,
                     itemBuilder: (context, index) {
@@ -130,6 +130,7 @@ class CourseCard extends StatelessWidget {
           Expanded(
             child: Text(
               title,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16.sp,
@@ -141,6 +142,7 @@ class CourseCard extends StatelessWidget {
           Expanded(
             child: Text(
               desc,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 11.sp,
                 color: Colors.black87,
@@ -150,7 +152,7 @@ class CourseCard extends StatelessWidget {
           ),
           const Spacer(),
           Text(
-            lecturer,
+            "Dr. $lecturer",
             style: TextStyle(
               fontSize: 11.sp,
               color: Colors.black45,

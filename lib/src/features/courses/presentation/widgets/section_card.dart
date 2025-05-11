@@ -102,16 +102,36 @@ class SectionCard<T> extends StatelessWidget {
                         child: InkWell(
                           onTap: () async {
                             if (title == 'Quiz') {
+                              //show aler dialog tell him that he can't go abck and if he close the app he will take 0
                               final quiz = context
                                   .read<CoursesCubit>()
                                   .quizes
                                   .firstWhere((e) => e == item.$2);
+                              CoursesCubit cubit = context.read<CoursesCubit>();
                               if (!quiz.isFinished) {
-                                context.goTo(Routes.quizRoute,
-                                    arguments: QuizScreen(
-                                      cubit: context.read<CoursesCubit>(),
-                                      quizes: quiz,
-                                    ));
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text('Alert'),
+                                      content: const Text(
+                                          'Once you enter the quiz, you cannot go back. If you close the app after starting the quiz, your score will be recorded as 0'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            context.goTo(Routes.quizRoute,
+                                                arguments: QuizScreen(
+                                                  cubit: cubit,
+                                                  quizes: quiz,
+                                                ));
+                                          },
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               } else {
                                 AppStates.ErrorToast("Quiz already submitted");
                               }
@@ -148,7 +168,8 @@ class SectionCard<T> extends StatelessWidget {
 
                               log(leacture?.sessionFilePath.toString() ?? "");
                               launchUrl(
-                                Uri.parse("${leacture?.sessionFilePath}"),
+                                Uri.parse(
+                                    "https://nwwqsqkwmkkuunczucdm.supabase.co/storage/v1/object/public/sessions/${leacture?.sessionFilePath}"),
                                 mode: LaunchMode.externalNonBrowserApplication,
                               );
                             } else if (title == 'Lecture') {
@@ -159,7 +180,8 @@ class SectionCard<T> extends StatelessWidget {
                                   ?.session
                                   ?.firstWhere((element) => element == item.$2);
                               launchUrl(
-                                Uri.parse("${leacture?.sessionFilePath}"),
+                                Uri.parse(
+                                    "https://nwwqsqkwmkkuunczucdm.supabase.co/storage/v1/object/public/sessions${leacture?.sessionFilePath}"),
                                 mode: LaunchMode.externalNonBrowserApplication,
                               );
                             } else if (title == 'Assignment') {

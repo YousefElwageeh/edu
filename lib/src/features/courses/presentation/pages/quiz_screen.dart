@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:edu/di.dart';
 import 'package:edu/src/core/app%20states/app_states.dart';
+import 'package:edu/src/core/routes/app_router.dart';
 import 'package:edu/src/core/routes/extensions.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:edu/src/features/courses/data/models/answers_model.dart';
 import 'package:edu/src/features/courses/data/models/quizes.dart';
 import 'package:edu/src/features/courses/data/repositories/course_repo.dart';
@@ -11,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/quiz_option.dart';
 import '../widgets/progress_bar.dart';
+import 'package:no_screenshot/no_screenshot.dart';
+
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -25,10 +29,22 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   List<int> selectedOption = [];
   List<Answers> answersData = [];
+  final _noScreenshot = NoScreenshot.instance;
 
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async {
+        bool result = await _noScreenshot.screenshotOff();
+        debugPrint('Screenshot Off: $result');
+
+        // Save quiz information to shared preferences
+        _saveQuizToPrefs();
+      },
+    );
+
     selectedOption = List.generate(
       widget.quizes.questions?.length ?? 0,
       (index) => -1,
@@ -37,6 +53,33 @@ class _QuizScreenState extends State<QuizScreen> {
       widget.quizes.questions?.length ?? 0,
       (index) => Answers(),
     );
+  }
+
+  @override
+  void dispose() {
+    // When quiz is properly completed, remove it from shared preferences
+    _removeQuizFromPrefs(widget.quizes.quizId.toString());
+    super.dispose();
+  }
+
+  // Save quiz information to shared preferences
+  Future<void> _saveQuizToPrefs() async {
+    try {
+      final storage = di<FlutterSecureStorage>();
+      final quizId = widget.quizes.quizId.toString();
+      final courseId = widget.quizes.courseId.toString();
+
+      // Save quiz ID and timestamp to mark it as started
+      await storage.write(
+          key: 'unfinished_quiz_$quizId',
+          value: DateTime.now().toIso8601String());
+      await storage.write(
+          key: 'unfinished_quiz_course_$quizId', value: courseId);
+
+      log('Saved quiz $quizId to shared preferences');
+    } catch (e) {
+      log('Error saving quiz to shared preferences: $e');
+    }
   }
 
   @override
@@ -214,7 +257,7 @@ class _ScreenButtonsState extends State<ScreenButtons> {
                     onPressed: () async {
                       if (!widget.selectedOption.contains(-1)) {
                         await widget.cubit.recordQuizScore(widget.answersData,
-                            widget.quizes.quizId.toString() ?? '');
+                            widget.quizes.quizId.toString());
                         final quiz = context
                             .read<CoursesCubit>()
                             .quizes
@@ -232,7 +275,19 @@ class _ScreenButtonsState extends State<ScreenButtons> {
                               .fold(0, (sum, degree) => sum + degree);
                         }
                         quiz.score = totalDegree.toString();
-                        context.back();
+
+                        // Navigate to the score screen
+                        context.goToAndReplace(
+                          Routes.scoreRoute,
+                          arguments: {
+                            'answers': widget.answersData,
+                            'quiz': widget.quizes,
+                          },
+                        );
+
+                        // Remove quiz from shared preferences when completed properly
+                        await _removeQuizFromPrefs(
+                            widget.quizes.quizId.toString());
                       } else {
                         AppStates.ErrorToast('Please answer all questions');
                       }
@@ -313,5 +368,19 @@ class _OptionsState extends State<Options> {
         ],
       ),
     );
+  }
+}
+
+// Remove quiz from shared preferences when completed properly
+Future<void> _removeQuizFromPrefs(String quizId) async {
+  try {
+    final storage = di<FlutterSecureStorage>();
+
+    await storage.delete(key: 'unfinished_quiz_$quizId');
+    await storage.delete(key: 'unfinished_quiz_course_$quizId');
+
+    log('Removed quiz $quizId from shared preferences');
+  } catch (e) {
+    log('Error removing quiz from shared preferences: $e');
   }
 }

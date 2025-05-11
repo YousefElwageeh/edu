@@ -16,6 +16,7 @@ import 'package:edu/src/features/profile/data/models/courses.dart';
 import 'package:edu/src/features/courses/data/repositories/course_repo.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 part 'courses_state.dart';
 
@@ -26,8 +27,7 @@ class CoursesCubit extends Cubit<CoursesState> {
   Future<void> getCourses() async {
     emit(CoursesLoading());
     try {
-      final result =
-          await repo.getCourses(StudentID: Constants.studentId ?? "");
+      final result = await repo.getCourses();
       result.fold(
         (failure) => emit(CoursesError(failure.message)),
         (coursesData) {
@@ -49,12 +49,13 @@ class CoursesCubit extends Cubit<CoursesState> {
       final result = await repo.getQuizes(courseid: courseid);
       result.fold(
         (failure) => emit(GetQuizesError()),
-        (quizesData) {
+        (quizesData) async {
           quizes = quizesData;
           sections.elementAt(3)['items'] = quizes
               .map((e) =>
                   "Lecture ${e.courseId} ${e.course?.courseName ?? 'N/A'}")
               .toList();
+          await checkForUnfinishedQuizzes();
           emit(GetQuizesLoaded());
         },
       );
@@ -217,14 +218,81 @@ class CoursesCubit extends Cubit<CoursesState> {
               assignments.map((e) => "Assignment ${e.assignId}").toList();
           quizes.firstWhere((e) => e.quizId.toString() == quizID).isFinished =
               true;
-       
-             
+
           emit(RecordQuizScoreLoaded());
         },
       );
     } catch (e) {
       log(e.toString());
       emit(RecordQuizScoreError());
+    }
+  }
+
+  // Check for unfinished quizzes and record zero scores
+  Future<void> checkForUnfinishedQuizzes() async {
+    try {
+      final storage = di<FlutterSecureStorage>();
+      final allItems = await storage.readAll();
+
+      // Filter for unfinished quiz keys
+      final unfinishedQuizKeys = allItems.keys
+          .where((key) =>
+              key.startsWith('unfinished_quiz_') && !key.contains('course_'))
+          .toList();
+
+      for (final key in unfinishedQuizKeys) {
+        // Extract quiz ID from the key
+        final quizId = key.replaceFirst('unfinished_quiz_', '');
+        final courseIdKey = 'unfinished_quiz_course_$quizId';
+        final courseId = await storage.read(key: courseIdKey);
+
+        // Only process quizzes for this course
+        if (courseId == courseId.toString()) {
+          log('Found unfinished quiz $quizId for course $courseId');
+
+          // Record a zero score for this quiz
+          await recordZeroScoreForQuiz(quizId);
+
+          // Delete the unfinished quiz entries
+          await storage.delete(key: key);
+          await storage.delete(key: courseIdKey);
+        }
+      }
+    } catch (e) {
+      log('Error checking for unfinished quizzes: $e');
+    }
+  }
+
+  Future<void> recordZeroScoreForQuiz(String quizId) async {
+    try {
+      // Wait for quizzes to load if needed
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Find the quiz in the loaded quizzes
+      final quizIndex =
+          quizes.indexWhere((quiz) => quiz.quizId.toString() == quizId);
+
+      if (quizIndex != -1) {
+        final quiz = quizes[quizIndex];
+
+        // Create zero-score answers for all questions
+        final zeroScoreAnswers = List.generate(
+          quiz.questions?.length ?? 0,
+          (index) => Answers(isCorrect: false, degree: 0),
+        );
+
+        // Record the zero score
+        await recordQuizScore(
+          zeroScoreAnswers,
+          quizId,
+        );
+
+        // Update the quiz score in the cubit's list
+        quizes[quizIndex].score = '0';
+        log('Recorded zero score for quiz $quizId');
+      }
+    } catch (e) {
+      log('Error recording zero score for quiz $quizId: $e');
     }
   }
 

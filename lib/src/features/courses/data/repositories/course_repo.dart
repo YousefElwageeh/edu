@@ -16,10 +16,9 @@ class CourseRepo {
   final CoursesDataSource dataSource;
   CourseRepo(this.dataSource);
 
-  Future<Either<Failure, List<Subjects>>> getCourses(
-      {required String StudentID}) async {
+  Future<Either<Failure, List<Subjects>>> getCourses() async {
     try {
-      final response = await dataSource.getCourses(StudentID: StudentID);
+      final response = await dataSource.getCourses();
 
       return Right(response);
     } catch (e) {

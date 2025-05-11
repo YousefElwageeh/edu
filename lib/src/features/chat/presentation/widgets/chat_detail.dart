@@ -61,38 +61,33 @@ class _ChatDetailState extends State<ChatDetail> {
                 child: StreamBuilder<List<MessageModel>>(
                     stream: context.read<ChatCubit>().messages,
                     builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final messages = snapshot.data!.reversed.toList();
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (scrollController.hasClients) {
-                            scrollController.animateTo(
-                              scrollController.position.maxScrollExtent,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOut,
-                            );
-                          }
-                        });
-                        return ListView.builder(
-                          itemCount: messages.length ?? 0,
-                          controller: scrollController,
-                          itemBuilder: (context, index) {
-                            DateTime dateTime =
-                                DateTime.parse(messages[index].msg_date_time);
+                      final messages = snapshot.data?.reversed.toList();
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (scrollController.hasClients) {
+                          scrollController.animateTo(
+                            scrollController.position.maxScrollExtent,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeOut,
+                          );
+                        }
+                      });
+                      return ListView.builder(
+                        itemCount: messages?.length ?? 0,
+                        controller: scrollController,
+                        itemBuilder: (context, index) {
+                          DateTime dateTime =
+                              DateTime.parse(messages![index].msg_date_time);
 
-                            return MessageBubble(
-                              message: messages[index].msg_content,
-                              time:
-                                  '${dateTime.year}-${dateTime.month}-${dateTime.day} ${dateTime.hour > 12 ? dateTime.hour - 12 : dateTime.hour}:${dateTime.minute}',
-                              isMe: messages[index].senderid.toString() ==
-                                  Constants.studentId!,
-                            );
-                          },
-                        );
-                      } else {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
+                          return MessageBubble(
+                            senderName: messages[index].senderName,
+                            message: messages[index].msg_content,
+                            time:
+                                '${dateTime.year}-${dateTime.month}-${dateTime.day} ${dateTime.hour > 12 ? dateTime.hour - 12 : dateTime.hour}:${dateTime.minute}',
+                            isMe: messages[index].senderid.toString() ==
+                                Constants.studentId!,
+                          );
+                        },
+                      );
                     }),
               ),
               Container(
@@ -133,6 +128,7 @@ class _ChatDetailState extends State<ChatDetail> {
                             .sendMessage(MessageModel(
                               msg_content: messageController.text,
                               msg_date_time: DateTime.now().toString(),
+                              senderName: Constants.studentName ?? "",
                               senderid: Constants.studentId!,
                               chat_id: widget.chat.chatId,
                             ));

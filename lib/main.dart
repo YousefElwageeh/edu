@@ -17,7 +17,7 @@ import 'package:logging/logging.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
-    url: "https://iuiwdjtmdeempcqxeuhf.supabase.co",
+    url: "https://nwwqsqkwmkkuunczucdm.supabase.co",
     anonKey: Constants.apiKey,
   );
   final supabaseLogger = Logger('supabase');
@@ -39,15 +39,21 @@ Future<void> main() async {
 
   Constants.studentId =
       await di<FlutterSecureStorage>().read(key: PrefData.token);
+  Constants.institutionId =
+      await di<FlutterSecureStorage>().read(key: PrefData.institutionId);
+  Constants.studentName =
+      await di<FlutterSecureStorage>().read(key: PrefData.studentName);
   runApp(EDU(
     studentId: Constants.studentId,
+    institutionId: Constants.institutionId,
   ));
 }
 
 class EDU extends StatelessWidget {
   String? studentId;
+  String? institutionId;
 
-  EDU({super.key, required this.studentId});
+  EDU({super.key, required this.studentId, required this.institutionId});
 
   @override
   Widget build(BuildContext context) {

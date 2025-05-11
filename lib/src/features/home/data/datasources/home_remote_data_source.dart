@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:edu/src/core/api/dio_factory.dart';
+import 'package:edu/src/features/courses/data/datasources/courses_data_source.dart';
 import 'package:edu/src/features/home/data/models/weekly_dead_lines.dart';
 import '../models/student_model.dart';
 import '../../../../core/api/constant&endPoints.dart';
@@ -28,10 +29,13 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
   @override
   Future<List<WeeklyDeadLines>> getWeeklyDeadlines(String studentId) async {
+    List<String> instructorsId = await getInstructorsIds();
+
     final response = await DioFactory.getdata(
       url: '/enrollment',
       quary: {
         'student_id': 'eq.$studentId',
+        'instructor_id': 'in.(${instructorsId.join(',')})',
         'select':
             '*,course:course_id!inner(course_id,course_name,assignment:assignment!inner(*))',
       },

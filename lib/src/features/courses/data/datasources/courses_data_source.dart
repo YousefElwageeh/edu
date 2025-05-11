@@ -13,17 +13,17 @@ import 'package:edu/src/features/courses/data/models/leactures.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CoursesDataSource {
-  Future<List<Subjects>> getCourses({required String StudentID}) async {
-    final response = await DioFactory.getdata(
-      url: EndPoints.enrollment,
-      quary: {
-        'select':
-            'student_id,course(course_id,course_name,course_description),instructor(instructor_id,instructor_name)',
-        "student_id": "eq.$StudentID"
-      },
-    );
+  Future<List<Subjects>> getCourses() async {
+    List<String> instructorsId = await getInstructorsIds();
 
-    return (response.data as List).map((e) => Subjects.fromJson(e)).toList();
+    final response = await Supabase.instance.client
+        .from("enrollment")
+        .select(
+            "* , course:course_id(course_id, course_name)  , instructor:instructor_id(instructor_id, instructor_name)")
+        .inFilter("instructor_id", instructorsId)
+        .eq("student_id", Constants.studentId ?? "");
+    log(response.toString());
+    return (response as List).map((e) => Subjects.fromJson(e)).toList();
   }
 
   Future<List<Quizes>> getQuizes(String courseid) async {
@@ -220,8 +220,20 @@ class CoursesDataSource {
         "student_id": Constants.studentId,
         "quiz_id": quizID,
         "score": totalDegree,
-        "student_answers": answersData.map((e) => e.answer).toList().toString(),
+        "student_answers": answersData.isNotEmpty
+            ? answersData.map((e) => e.answer).toList().toString()
+            : "",
       }
     ]);
   }
+}
+
+Future<List<String>> getInstructorsIds() async {
+  List<dynamic> data = await Supabase.instance.client
+      .from("instructor_institution")
+      .select("*")
+      .eq("institution_id", Constants.institutionId ?? "");
+  List<String> instructorsId =
+      data.map((instructor) => instructor['instructor_id'].toString()).toList();
+  return instructorsId;
 }

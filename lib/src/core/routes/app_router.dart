@@ -10,6 +10,7 @@ import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
 import 'package:edu/src/features/courses/presentation/pages/course_details_screen.dart';
 import 'package:edu/src/features/courses/presentation/pages/project_screen.dart';
 import 'package:edu/src/features/courses/presentation/pages/quiz_screen.dart';
+import 'package:edu/src/features/courses/presentation/pages/score_screen.dart';
 import 'package:edu/src/features/home/data/models/weekly_dead_lines.dart';
 import 'package:edu/src/features/home/data/repositories/home_repository_impl.dart';
 import 'package:edu/src/features/home/presentation/cubit/home_cubit.dart';
@@ -24,6 +25,7 @@ class Routes {
   static const String courseRoute = '/course';
   static const String quizRoute = '/quiz';
   static const String projectRoute = '/project';
+  static const String scoreRoute = '/score';
 }
 
 class AppRouter {
@@ -53,6 +55,13 @@ class AppRouter {
               cubit: (arguments).cubit,
               quizes: (arguments).quizes,
             ),
+          ),
+        );
+      case Routes.scoreRoute:
+        return MaterialPageRoute(
+          builder: (_) => ScoreScreen(
+            answers: (arguments as Map<String, dynamic>)['answers'],
+            quiz: (arguments)['quiz'],
           ),
         );
       case Routes.courseRoute:

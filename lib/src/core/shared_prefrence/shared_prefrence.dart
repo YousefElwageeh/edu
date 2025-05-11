@@ -5,7 +5,9 @@ class PrefData {
   static String signIn = "${defaultString}signIn";
   static String isIntro = "${defaultString}isIntro";
   static String isFirstTime = "${defaultString}isFirstTime";
-  static String Language = "Language";
+  static String language = "Language";
+  static String studentName = "studentName";
+  static String institutionId = "institutionId";
 
   static String isDark = 'isDark';
   static String token = 'token';
@@ -63,11 +65,19 @@ class PrefData {
   }
 
   void setLanguage(String language) async {
-    await prefs.setString(Language, language);
+    await prefs.setString(language, language);
   }
 
   Future<String> getLanguage() async {
-    return prefs.getString(Language) ?? 'en';
+    return prefs.getString(language) ?? 'en';
+  }
+
+  void setInstitutionId(String institutionId) async {
+    await prefs.setString(institutionId, institutionId);
+  }
+
+  Future<String> getInstitutionId() async {
+    return prefs.getString(institutionId) ?? '';
   }
 
   Future<String> getTokenExpireDate() async {

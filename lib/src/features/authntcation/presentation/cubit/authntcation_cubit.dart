@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:edu/di.dart';
 import 'package:edu/src/core/api/constant&endPoints.dart';
@@ -36,6 +38,14 @@ class AuthntcationCubit extends Cubit<AuthntcationState> {
             .write(key: PrefData.token, value: student.studentId.toString());
 
         Constants.studentId = student.studentId.toString();
+        Constants.institutionId = student.institutionId.toString();
+        Constants.studentName = student.studentName;
+        log(student.studentName);
+        di<FlutterSecureStorage>().write(
+            key: PrefData.studentName, value: student.studentName.toString());
+        di<FlutterSecureStorage>().write(
+            key: PrefData.institutionId,
+            value: student.institutionId.toString());
         context.goToAndReplaceUntil(Routes.layoutRoute,
             predicate: (route) => false);
         AppStates.SucessToast('Login Success');

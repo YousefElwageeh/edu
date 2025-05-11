@@ -4,13 +4,15 @@ class MessageBubble extends StatelessWidget {
   final String message;
   final String time;
   final bool isMe;
+  final String senderName;
 
   const MessageBubble({
-    Key? key,
+    super.key,
     required this.message,
     required this.time,
     required this.isMe,
-  }) : super(key: key);
+    required this.senderName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +35,19 @@ class MessageBubble extends StatelessWidget {
               isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Text(
+              senderName,
+              style: TextStyle(
+                color: isMe
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            Text(
               message,
               style: TextStyle(
-                color: isMe ? Colors.white : Theme.of(context).colorScheme.onSurface,
+                color: isMe
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),

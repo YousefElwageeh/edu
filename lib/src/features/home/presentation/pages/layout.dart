@@ -65,33 +65,37 @@ class _LayoutScreenState extends State<LayoutScreen> {
               curve: Curves.easeInOut);
         },
       ),
-      body: SafeArea(
-        child: PageView(
-          onPageChanged: (value) {
-            selectedIndex = value;
-            setState(() {});
-          },
-          controller: pageController,
-          children: [
-            BlocProvider(
-              create: (context) => HomeCubit(
-                repository: di(),
+      body: PopScope(
+        canPop: false,
+        child: SafeArea(
+          child: PageView(
+            physics: const NeverScrollableScrollPhysics(),
+            onPageChanged: (value) {
+              selectedIndex = value;
+              setState(() {});
+            },
+            controller: pageController,
+            children: [
+              BlocProvider(
+                create: (context) => HomeCubit(
+                  repository: di(),
+                ),
+                child: const HomeScreen(),
               ),
-              child: const HomeScreen(),
-            ),
-            const CourseScreen(),
-            const CalendarScreen(),
-            const ChatScreen(),
-            BlocProvider(
-              create: (context) => HomeCubit(
-                repository: di(),
-              )..getStudentData(),
-              child: BlocProvider(
-                create: (context) => ProfileCubit(),
-                child: const ProfileScreen(),
-              ),
-            )
-          ],
+              const CourseScreen(),
+              const CalendarScreen(),
+              const ChatScreen(),
+              BlocProvider(
+                create: (context) => HomeCubit(
+                  repository: di(),
+                )..getStudentData(),
+                child: BlocProvider(
+                  create: (context) => ProfileCubit(),
+                  child: const ProfileScreen(),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
