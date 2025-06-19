@@ -79,17 +79,6 @@ class SectionCard<T> extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
-              subtitle: Padding(
-                padding: EdgeInsets.only(top: 4.h),
-                child: Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    color: Colors.black38,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
               children: items.indexed.map<Widget>((item) {
                 return Padding(
                   padding:
@@ -168,8 +157,7 @@ class SectionCard<T> extends StatelessWidget {
 
                               log(leacture?.sessionFilePath.toString() ?? "");
                               launchUrl(
-                                Uri.parse(
-                                    "https://nwwqsqkwmkkuunczucdm.supabase.co/storage/v1/object/public/sessions/${leacture?.sessionFilePath}"),
+                                Uri.parse("${leacture?.sessionFilePath}"),
                                 mode: LaunchMode.externalNonBrowserApplication,
                               );
                             } else if (title == 'Lecture') {
@@ -180,8 +168,7 @@ class SectionCard<T> extends StatelessWidget {
                                   ?.session
                                   ?.firstWhere((element) => element == item.$2);
                               launchUrl(
-                                Uri.parse(
-                                    "https://nwwqsqkwmkkuunczucdm.supabase.co/storage/v1/object/public/sessions${leacture?.sessionFilePath}"),
+                                Uri.parse("${leacture?.sessionFilePath}"),
                                 mode: LaunchMode.externalNonBrowserApplication,
                               );
                             } else if (title == 'Assignment') {

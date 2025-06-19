@@ -26,7 +26,7 @@ class LoginScreen extends StatelessWidget {
         canPop: false,
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 02),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 02),
             child: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
@@ -75,12 +75,12 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: defaultRichText(
-                        onTap: () => context.goTo(Routes.registerRoute),
-                        text1: AppStrings.dontHaveAccount,
-                        text2: AppStrings.signUpButton))
+                // SliverFillRemaining(
+                //     hasScrollBody: false,
+                //     child: defaultRichText(
+                //         onTap: () => context.goTo(Routes.registerRoute),
+                //         text1: AppStrings.dontHaveAccount,
+                //         text2: AppStrings.signUpButton))
               ],
             ),
           ),

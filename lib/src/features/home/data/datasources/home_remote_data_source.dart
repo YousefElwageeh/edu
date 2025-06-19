@@ -30,6 +30,11 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   @override
   Future<List<WeeklyDeadLines>> getWeeklyDeadlines(String studentId) async {
     List<String> instructorsId = await getInstructorsIds();
+    final today = DateTime.now();
+
+    final endOfWeek = today.add(const Duration(days: 13)); // Sunday
+
+    final endStr = endOfWeek.toIso8601String();
 
     final response = await DioFactory.getdata(
       url: '/enrollment',
@@ -38,6 +43,10 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
         'instructor_id': 'in.(${instructorsId.join(',')})',
         'select':
             '*,course:course_id!inner(course_id,course_name,assignment:assignment!inner(*))',
+        'course.assignment.assign_duedate': [
+          "gte.${today.year}-${today.month}-${today.day}",
+          "lt.${endOfWeek.year}-${endOfWeek.month}-${endOfWeek.day}"
+        ],
       },
     );
 
