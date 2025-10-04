@@ -7,7 +7,9 @@ class JsonAssets {}
 const String assetsPath = "assets/images";
 
 class AssetsManger {
-  static const String botImage = 'assets/images/full_image.png';
+  static const String auth_Image = 'assets/images/auth_Image.png';
+  static const String lazy_female = 'assets/images/lazy_female.png';
+  static const String logo = 'assets/images/logo.svg';
 }
 
 const String assetsIconsPath = "assets/icons";

@@ -13,6 +13,7 @@ const String connectTimeout = "Content-Type";
 const String ACCEPT = "Accept";
 const String AUTHORIZATION = "Authorization";
 const String DEFAULT_LANGUAGE = "language";
+const String ApiKey = "apikey";
 
 const int apiTimeOut = 600000;
 
@@ -26,8 +27,9 @@ class DioFactory {
     Map<String, String> headers = {
       CONTENT_TYPE: APPLICATION_JSON,
       ACCEPT: APPLICATION_JSON,
-      AUTHORIZATION: Constants.token ?? '',
+      // AUTHORIZATION: Constants.studentId ?? '',
       DEFAULT_LANGUAGE: Constants.language,
+      ApiKey: Constants.apiKey,
     };
 
     dio.options = BaseOptions(

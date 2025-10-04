@@ -1,18 +1,99 @@
+import 'package:edu/di.dart';
+import 'package:edu/src/core/api/constant&endPoints.dart';
+import 'package:edu/src/features/authntcation/data/repositories/login_repo.dart';
+import 'package:edu/src/features/authntcation/presentation/pages/login.dart';
+import 'package:edu/src/features/authntcation/presentation/cubit/authntcation_cubit.dart';
+import 'package:edu/src/features/authntcation/presentation/pages/register.dart';
+import 'package:edu/src/features/courses/data/models/quizes.dart';
+import 'package:edu/src/features/courses/data/repositories/course_repo.dart';
+import 'package:edu/src/features/courses/presentation/cubit/courses_cubit.dart';
+import 'package:edu/src/features/courses/presentation/pages/course_details_screen.dart';
+import 'package:edu/src/features/courses/presentation/pages/project_screen.dart';
+import 'package:edu/src/features/courses/presentation/pages/quiz_screen.dart';
+import 'package:edu/src/features/courses/presentation/pages/score_screen.dart';
+import 'package:edu/src/features/home/data/models/weekly_dead_lines.dart';
+import 'package:edu/src/features/home/data/repositories/home_repository_impl.dart';
+import 'package:edu/src/features/home/presentation/cubit/home_cubit.dart';
+import 'package:edu/src/features/home/presentation/pages/layout.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Routes {
-  static const String loginScreen = '/loginScreen';
+  static const String loginRoute = '/login';
+  static const String registerRoute = '/register';
+  static const String layoutRoute = '/layout';
+  static const String courseRoute = '/course';
+  static const String quizRoute = '/quiz';
+  static const String projectRoute = '/project';
+  static const String scoreRoute = '/score';
 }
 
 class AppRouter {
-  Route generateRoute(RouteSettings settings) {
+  static Route generateRoute(RouteSettings settings) {
     //this arguments to be passed in any screen like this ( arguments as ClassName )
     final arguments = settings.arguments;
 
     switch (settings.name) {
-      case Routes.loginScreen:
+      case Routes.projectRoute:
         return MaterialPageRoute(
-          builder: (_) => const SizedBox(),
+          builder: (_) {
+            return BlocProvider.value(
+              value: (arguments as ProjectScreen).cubit,
+              child: ProjectScreen(
+                assignment: (arguments).assignment,
+                isAssignment: (arguments).isAssignment,
+                cubit: (arguments).cubit,
+              ),
+            );
+          },
+        );
+      case Routes.quizRoute:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: (arguments as QuizScreen).cubit,
+            child: QuizScreen(
+              cubit: (arguments).cubit,
+              quizes: (arguments).quizes,
+            ),
+          ),
+        );
+      case Routes.scoreRoute:
+        return MaterialPageRoute(
+          builder: (_) => ScoreScreen(
+            answers: (arguments as Map<String, dynamic>)['answers'],
+            quiz: (arguments)['quiz'],
+          ),
+        );
+      case Routes.courseRoute:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider<CoursesCubit>.value(
+            value: (arguments as CourseDetailsScreen).cubit,
+            child: CourseDetailsScreen(
+              courseId: (arguments).courseId,
+              courseName: (arguments).courseName,
+              cubit: (arguments).cubit,
+            ),
+          ),
+        );
+      case Routes.loginRoute:
+        return MaterialPageRoute(
+          builder: (_) {
+            preAuth();
+            return BlocProvider(
+              create: (context) => AuthntcationCubit(
+                repository: di<LoginRepository>(),
+              ),
+              child: LoginScreen(),
+            );
+          },
+        );
+      case Routes.registerRoute:
+        return MaterialPageRoute(
+          builder: (_) => RegisterScreen(),
+        );
+      case Routes.layoutRoute:
+        return MaterialPageRoute(
+          builder: (_) => const LayoutScreen(),
         );
       default:
         return MaterialPageRoute(
